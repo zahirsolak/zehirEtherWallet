@@ -1,6 +1,6 @@
 'use strict';
 
-define('cold-staking-app/tests/app.lint-test', [], function () {
+define('zehirwallet/tests/app.lint-test', [], function () {
   'use strict';
 
   QUnit.module('ESLint | app');
@@ -70,7 +70,7 @@ define('cold-staking-app/tests/app.lint-test', [], function () {
     assert.ok(true, 'services/simulator.js should pass ESLint\n\n');
   });
 });
-define('cold-staking-app/tests/helpers/destroy-app', ['exports'], function (exports) {
+define('zehirwallet/tests/helpers/destroy-app', ['exports'], function (exports) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -81,7 +81,7 @@ define('cold-staking-app/tests/helpers/destroy-app', ['exports'], function (expo
     Ember.run(application, 'destroy');
   }
 });
-define('cold-staking-app/tests/helpers/module-for-acceptance', ['exports', 'qunit', 'cold-staking-app/tests/helpers/start-app', 'cold-staking-app/tests/helpers/destroy-app'], function (exports, _qunit, _startApp, _destroyApp) {
+define('zehirwallet/tests/helpers/module-for-acceptance', ['exports', 'qunit', 'zehirwallet/tests/helpers/start-app', 'zehirwallet/tests/helpers/destroy-app'], function (exports, _qunit, _startApp, _destroyApp) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -110,7 +110,7 @@ define('cold-staking-app/tests/helpers/module-for-acceptance', ['exports', 'quni
     });
   };
 });
-define('cold-staking-app/tests/helpers/resolver', ['exports', 'cold-staking-app/resolver', 'cold-staking-app/config/environment'], function (exports, _resolver, _environment) {
+define('zehirwallet/tests/helpers/resolver', ['exports', 'zehirwallet/resolver', 'zehirwallet/config/environment'], function (exports, _resolver, _environment) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -127,7 +127,7 @@ define('cold-staking-app/tests/helpers/resolver', ['exports', 'cold-staking-app/
 
   exports.default = resolver;
 });
-define('cold-staking-app/tests/helpers/start-app', ['exports', 'cold-staking-app/app', 'cold-staking-app/config/environment'], function (exports, _app, _environment) {
+define('zehirwallet/tests/helpers/start-app', ['exports', 'zehirwallet/app', 'zehirwallet/config/environment'], function (exports, _app, _environment) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -146,7 +146,7 @@ define('cold-staking-app/tests/helpers/start-app', ['exports', 'cold-staking-app
     });
   }
 });
-define('cold-staking-app/tests/integration/components/cs-simulator-test', ['ember-qunit'], function (_emberQunit) {
+define('zehirwallet/tests/integration/components/cs-simulator-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
   (0, _emberQunit.moduleForComponent)('cs-simulator', 'Integration | Component | cs simulator', {
@@ -175,7 +175,7 @@ define('cold-staking-app/tests/integration/components/cs-simulator-test', ['embe
     assert.equal(this.$().text().trim(), 'template block text');
   });
 });
-define('cold-staking-app/tests/integration/components/get-resource-test', ['ember-qunit'], function (_emberQunit) {
+define('zehirwallet/tests/integration/components/get-resource-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
   (0, _emberQunit.moduleForComponent)('get-resource', 'Integration | Component | get resource', {
@@ -204,7 +204,7 @@ define('cold-staking-app/tests/integration/components/get-resource-test', ['embe
     assert.equal(this.$().text().trim(), 'template block text');
   });
 });
-define('cold-staking-app/tests/integration/components/nav-bar-test', ['ember-qunit'], function (_emberQunit) {
+define('zehirwallet/tests/integration/components/nav-bar-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
   (0, _emberQunit.moduleForComponent)('nav-bar', 'Integration | Component | nav bar', {
@@ -233,7 +233,7 @@ define('cold-staking-app/tests/integration/components/nav-bar-test', ['ember-qun
     assert.equal(this.$().text().trim(), 'template block text');
   });
 });
-define('cold-staking-app/tests/integration/components/select-wallet-test', ['ember-qunit'], function (_emberQunit) {
+define('zehirwallet/tests/integration/components/select-wallet-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
   (0, _emberQunit.moduleForComponent)('select-wallet', 'Integration | Component | select wallet', {
@@ -262,13 +262,13 @@ define('cold-staking-app/tests/integration/components/select-wallet-test', ['emb
     assert.equal(this.$().text().trim(), 'template block text');
   });
 });
-define('cold-staking-app/tests/test-helper', ['cold-staking-app/tests/helpers/resolver', 'ember-qunit', 'ember-cli-qunit'], function (_resolver, _emberQunit, _emberCliQunit) {
+define('zehirwallet/tests/test-helper', ['zehirwallet/tests/helpers/resolver', 'ember-qunit', 'ember-cli-qunit'], function (_resolver, _emberQunit, _emberCliQunit) {
   'use strict';
 
   (0, _emberQunit.setResolver)(_resolver.default);
   (0, _emberCliQunit.start)();
 });
-define('cold-staking-app/tests/tests.lint-test', [], function () {
+define('zehirwallet/tests/tests.lint-test', [], function () {
   'use strict';
 
   QUnit.module('ESLint | tests');
@@ -348,7 +348,7 @@ define('cold-staking-app/tests/tests.lint-test', [], function () {
     assert.ok(true, 'unit/services/simulator-test.js should pass ESLint\n\n');
   });
 });
-define('cold-staking-app/tests/unit/initializers/injector-test', ['cold-staking-app/initializers/injector', 'qunit', 'cold-staking-app/tests/helpers/destroy-app'], function (_injector, _qunit, _destroyApp) {
+define('zehirwallet/tests/unit/initializers/injector-test', ['cold-staking-app/initializers/injector', 'qunit', 'zehirwallet/tests/helpers/destroy-app'], function (_injector, _qunit, _destroyApp) {
   'use strict';
 
   (0, _qunit.module)('Unit | Initializer | injector', {
@@ -373,7 +373,7 @@ define('cold-staking-app/tests/unit/initializers/injector-test', ['cold-staking-
     assert.ok(true);
   });
 });
-define('cold-staking-app/tests/unit/routes/application-test', ['ember-qunit'], function (_emberQunit) {
+define('zehirwallet/tests/unit/routes/application-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
   (0, _emberQunit.moduleFor)('route:application', 'Unit | Route | application', {
@@ -386,7 +386,7 @@ define('cold-staking-app/tests/unit/routes/application-test', ['ember-qunit'], f
     assert.ok(route);
   });
 });
-define('cold-staking-app/tests/unit/routes/index-test', ['ember-qunit'], function (_emberQunit) {
+define('zehirwallet/tests/unit/routes/index-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
   (0, _emberQunit.moduleFor)('route:index', 'Unit | Route | index', {
@@ -399,7 +399,7 @@ define('cold-staking-app/tests/unit/routes/index-test', ['ember-qunit'], functio
     assert.ok(route);
   });
 });
-define('cold-staking-app/tests/unit/routes/simulator-test', ['ember-qunit'], function (_emberQunit) {
+define('zehirwallet/tests/unit/routes/simulator-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
   (0, _emberQunit.moduleFor)('route:simulator', 'Unit | Route | simulator', {
@@ -412,7 +412,7 @@ define('cold-staking-app/tests/unit/routes/simulator-test', ['ember-qunit'], fun
     assert.ok(route);
   });
 });
-define('cold-staking-app/tests/unit/services/resource-test', ['ember-qunit'], function (_emberQunit) {
+define('zehirwallet/tests/unit/services/resource-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
   (0, _emberQunit.moduleFor)('service:resource', 'Unit | Service | resource', {
@@ -426,7 +426,7 @@ define('cold-staking-app/tests/unit/services/resource-test', ['ember-qunit'], fu
     assert.ok(service);
   });
 });
-define('cold-staking-app/tests/unit/services/simulator-test', ['ember-qunit'], function (_emberQunit) {
+define('zehirwallet/tests/unit/services/simulator-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
   (0, _emberQunit.moduleFor)('service:simulator', 'Unit | Service | simulator', {
