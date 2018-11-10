@@ -440,6 +440,6 @@ define('cold-staking-app/tests/unit/services/simulator-test', ['ember-qunit'], f
     assert.ok(service);
   });
 });
-require('cold-staking-app/tests/test-helper');
+require('zehirwallet/tests/test-helper');
 EmberENV.TESTS_FILE_LOADED = true;
 //# sourceMappingURL=tests.map

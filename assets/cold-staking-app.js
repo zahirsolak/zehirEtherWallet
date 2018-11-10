@@ -545,19 +545,6 @@ define('cold-staking-app/components/select-wallet', ['exports', 'ethers', 'momen
     }]
   });
 });
-define('cold-staking-app/components/welcome-page', ['exports', 'ember-welcome-page/components/welcome-page'], function (exports, _welcomePage) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _welcomePage.default;
-    }
-  });
-});
 define('cold-staking-app/helpers/app-version', ['exports', 'cold-staking-app/config/environment', 'ember-cli-app-version/utils/regexp'], function (exports, _environment, _regexp) {
   'use strict';
 
@@ -1311,8 +1298,8 @@ define("cold-staking-app/templates/simulator", ["exports"], function (exports) {
 });
 
 
-define('cold-staking-app/config/environment', [], function() {
-  var prefix = 'cold-staking-app';
+define('zehirwallet/config/environment', [], function() {
+  var prefix = 'zehirwallet';
 try {
   var metaName = prefix + '/config/environment';
   var rawConfig = document.querySelector('meta[name="' + metaName + '"]').getAttribute('content');
@@ -1331,6 +1318,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("cold-staking-app/app")["default"].create({"name":"cold-staking-app","version":"0.0.0+87f763b2"});
+  require("zehirwallet/app")["default"].create({"name":"cold-staking-app","version":"0.0.0+34634c9c"});
 }
 //# sourceMappingURL=cold-staking-app.map
