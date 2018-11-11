@@ -137,6 +137,7 @@ define('zehirwallet/components/get-resource', ['exports'], function (exports) {
     value: true
   });
   exports.default = Ember.Component.extend({
+    tagName: "",
     resourceService: Ember.inject.service('resource'),
     key: null,
     languageChanged: Ember.observer('resourceService.language', function () {
@@ -160,18 +161,34 @@ define('zehirwallet/components/nav-bar', ['exports'], function (exports) {
   });
   exports.default = Ember.Component.extend({});
 });
-define('zehirwallet/components/select-wallet', ['exports', 'ethers', 'moment'], function (exports, _ethers, _moment) {
+define('zehirwallet/controllers/index', ['exports', 'ethers', 'moment'], function (exports, _ethers, _moment) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.Component.extend({
-    resource: Ember.inject.service(),
+  exports.default = Ember.Controller.extend({
+    networks: Ember.computed(function () {
+      var array = [];
+      var source = this.get('config.network');
+      for (var element in source) {
+        array.push(source[element]);
+      }
+      return array;
+    }),
+    provider: Ember.computed('config.currentNetwork', function () {
+      return new _ethers.default.providers.JsonRpcProvider(this.get('config.currentNetwork.url'));
+    }),
+    currentNetworkKeyChanged: Ember.observer('config.currentNetworkKey', function () {
+      this.set('config.currentNetwork', this.get('config.network.' + this.get('config.currentNetworkKey')));
+      document.title = this.get('config.currentNetwork.description');
+    }),
     selectedWallet: null,
     privateKey: '',
     amount: 0,
-    contractAddress: '0xd813419749b3c2cdc94a2f9cfcf154113264a9d6',
+    contractAddress: Ember.computed(function () {
+      return this.get('config.coldStaking.contractAddress');
+    }),
     targetWalletAdress: '',
     logs: [],
     withdrawIsDisabled: Ember.computed('currentRewards', function () {
@@ -212,6 +229,9 @@ define('zehirwallet/components/select-wallet', ['exports', 'ethers', 'moment'], 
     },
 
     actions: {
+      privateKeyForTest: function privateKeyForTest() {
+        this.set('privateKey', this.get('config.privateKeyForTest'));
+      },
       sendToCsContract: function sendToCsContract() {
         var _this = this;
 
@@ -378,19 +398,17 @@ define('zehirwallet/components/select-wallet', ['exports', 'ethers', 'moment'], 
             this.addError("Private Key is invalid!");
             return;
           }
-          var url = "https://clo-testnet3.0xinfra.com";
-          var provider = new _ethers.default.providers.JsonRpcProvider(url);
-          this.set('provider', provider);
+
+          var provider = this.get("provider");
 
           this.set('overrides', {
-            "chainId": 20729,
-            "gasLimit": 150000,
+            "chainId": this.get('config.currentNetwork.chainId'),
+            "gasLimit": this.get('config.currentNetwork.gasLimit'),
             "gasPrice": this.get('provider').getGasPrice()
           });
           var wallet = new _ethers.default.Wallet(privateKey, provider);
           this.set("selectedWallet", wallet);
-          var contract = new _ethers.default.Contract(this.get('contractAddress'), this.get('abi'), wallet);
-
+          var contract = new _ethers.default.Contract(this.get('contractAddress'), this.get('config.coldStaking.contractAbi'), wallet);
           contract.on('StartStaking', function (addr, value, amount, time) {
             _this7.addSuccess('Started Staking. Params => addr:' + addr + ', value:' + _ethers.default.utils.formatEther(value) + ', amount:' + _ethers.default.utils.formatEther(amount) + ', time:' + (0, _moment.default)(new Date(parseInt(time.toString()) * 1000)).format());
             _this7.send('loadInfo');
@@ -414,6 +432,10 @@ define('zehirwallet/components/select-wallet', ['exports', 'ethers', 'moment'], 
         this.set("selectedWallet", null);
         this.set('privateKey', null);
       },
+      changeNetwork: function changeNetwork(key) {
+        this.set('config.currentNetworkKey', key);
+        this.send('removeWalletInfo');
+      },
       changeLanguage: function changeLanguage(language) {
         this.set("resource.language", language);
         _moment.default.locale(language);
@@ -422,127 +444,7 @@ define('zehirwallet/components/select-wallet', ['exports', 'ethers', 'moment'], 
         });else countdown.resetLabels();
         this.send('loadInfo');
       }
-    },
-    abi: [{
-      "constant": false,
-      "inputs": [],
-      "name": "start_staking",
-      "outputs": [],
-      "payable": true,
-      "stateMutability": "payable",
-      "type": "function"
-    }, {
-      "constant": false,
-      "inputs": [],
-      "name": "claim",
-      "outputs": [],
-      "payable": false,
-      "stateMutability": "nonpayable",
-      "type": "function"
-    }, {
-      "constant": true,
-      "inputs": [{
-        "name": "",
-        "type": "address"
-      }],
-      "name": "staker",
-      "outputs": [{
-        "name": "amount",
-        "type": "uint256"
-      }, {
-        "name": "time",
-        "type": "uint256"
-      }],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    }, {
-      "constant": true,
-      "inputs": [{
-        "name": "_addr",
-        "type": "address"
-      }],
-      "name": "stake_reward",
-      "outputs": [{
-        "name": "",
-        "type": "uint256"
-      }],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    }, {
-      "constant": false,
-      "inputs": [],
-      "name": "withdraw_stake",
-      "outputs": [],
-      "payable": false,
-      "stateMutability": "nonpayable",
-      "type": "function"
-    }, {
-      "payable": true,
-      "stateMutability": "payable",
-      "type": "fallback"
-    }, {
-      "anonymous": false,
-      "inputs": [{
-        "indexed": false,
-        "name": "addr",
-        "type": "address"
-      }, {
-        "indexed": false,
-        "name": "value",
-        "type": "uint256"
-      }, {
-        "indexed": false,
-        "name": "amount",
-        "type": "uint256"
-      }, {
-        "indexed": false,
-        "name": "time",
-        "type": "uint256"
-      }],
-      "name": "StartStaking",
-      "type": "event"
-    }, {
-      "anonymous": false,
-      "inputs": [{
-        "indexed": false,
-        "name": "staker",
-        "type": "address"
-      }, {
-        "indexed": false,
-        "name": "amount",
-        "type": "uint256"
-      }],
-      "name": "WithdrawStake",
-      "type": "event"
-    }, {
-      "anonymous": false,
-      "inputs": [{
-        "indexed": false,
-        "name": "staker",
-        "type": "address"
-      }, {
-        "indexed": false,
-        "name": "reward",
-        "type": "uint256"
-      }],
-      "name": "Claim",
-      "type": "event"
-    }, {
-      "anonymous": false,
-      "inputs": [{
-        "indexed": false,
-        "name": "_address",
-        "type": "address"
-      }, {
-        "indexed": false,
-        "name": "value",
-        "type": "uint256"
-      }],
-      "name": "DonationDeposited",
-      "type": "event"
-    }]
+    }
   });
 });
 define('zehirwallet/helpers/app-version', ['exports', 'zehirwallet/config/environment', 'ember-cli-app-version/utils/regexp'], function (exports, _environment, _regexp) {
@@ -582,6 +484,19 @@ define('zehirwallet/helpers/app-version', ['exports', 'zehirwallet/config/enviro
   }
 
   exports.default = Ember.Helper.helper(appVersion);
+});
+define('zehirwallet/helpers/eq', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.eq = eq;
+  function eq(params) {
+    return params.length == 2 && params[0] == params[1];
+  }
+
+  exports.default = Ember.Helper.helper(eq);
 });
 define('zehirwallet/helpers/is-after', ['exports', 'ember-moment/helpers/is-after'], function (exports, _isAfter) {
   'use strict';
@@ -911,6 +826,26 @@ define('zehirwallet/initializers/app-version', ['exports', 'ember-cli-app-versio
     initialize: (0, _initializerFactory.default)(name, version)
   };
 });
+define('zehirwallet/initializers/config', ['exports', 'zehirwallet/config/environment'], function (exports, _environment) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.initialize = initialize;
+  function initialize(application) {
+
+    application.register('config:main', Ember.Object.extend(_environment.default));
+    application.inject('route', 'config', 'config:main');
+    application.inject('controller', 'config', 'config:main');
+    application.inject('component', 'config', 'config:main');
+  }
+
+  exports.default = {
+    name: "config",
+    initialize: initialize
+  };
+});
 define('zehirwallet/initializers/container-debug-adapter', ['exports', 'ember-resolver/resolvers/classic/container-debug-adapter'], function (exports, _containerDebugAdapter) {
   'use strict';
 
@@ -1013,7 +948,7 @@ define('zehirwallet/initializers/injectStore', ['exports'], function (exports) {
     initialize: function initialize() {}
   };
 });
-define('zehirwallet/initializers/injector', ['exports'], function (exports) {
+define('zehirwallet/initializers/resource', ['exports'], function (exports) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -1022,10 +957,12 @@ define('zehirwallet/initializers/injector', ['exports'], function (exports) {
   exports.initialize = initialize;
   function initialize(application) {
     application.inject('route', 'resource', 'service:resource');
+    application.inject('controller', 'resource', 'service:resource');
     application.inject('component', 'resource', 'service:resource');
   }
 
   exports.default = {
+    name: 'resource',
     initialize: initialize
   };
 });
@@ -1092,17 +1029,17 @@ define('zehirwallet/router', ['exports', 'zehirwallet/config/environment'], func
   exports.default = Router;
 });
 define('zehirwallet/routes/application', ['exports', 'moment'], function (exports, _moment) {
-    'use strict';
+  'use strict';
 
-    Object.defineProperty(exports, "__esModule", {
-        value: true
-    });
-    exports.default = Ember.Route.extend({
-        resource: Ember.inject.service(),
-        model: function model() {
-            _moment.default.locale(this.get('resource.language'));
-        }
-    });
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Route.extend({
+    model: function model() {
+      _moment.default.locale(this.get('resource.language'));
+      this.set('config.currentNetworkKey', this.get('config.defaultNetworkKey'));
+    }
+  });
 });
 define('zehirwallet/routes/index', ['exports'], function (exports) {
   'use strict';
@@ -1154,6 +1091,8 @@ define('zehirwallet/services/resource', ['exports'], function (exports) {
     language: 'en',
     resources: {
       'tr': {
+        'applicationName': 'Zehir Ether Wallet',
+        'network': "Ağ",
         'cs': {
           'pageTitle': 'Cold Staking İşlemleri - Testnet',
           'privateKey': 'Özel Anahtar',
@@ -1177,7 +1116,8 @@ define('zehirwallet/services/resource', ['exports'], function (exports) {
           'operations': 'İşlemler / Loglar',
           'sendToCsContract_confirmMessage': '|amount| CLO cold staking akıllı sözleşmesine transfer edilecektir. Onaylıyor musunuz?',
           'sendToWalletConfirmMessage': "Aşağıda belirtilen cüzdan adresine |amount| CLO gönderilecektir. Onaylıyor musunuz? |walletAddress|",
-          'privateKeyForTest': 'Uygulamayı test etmek için aşağıda belirtilen özel anahtarı kullanabilirsiniz.',
+          'privateKeyForTest': 'Test için gerekli özel anahtarı girmek için buraya tıklayabilirsiniz.',
+          'privateKeyForTesti_old': 'Uygulamayı test etmek için aşağıda belirtilen özel anahtarı kullanabilirsiniz.',
           'transfer': 'Transfer',
           'targetWalletAdress': 'Hedef Cüzdan Adresi',
           'amountToSend': 'Gönderilecek Miktar',
@@ -1189,6 +1129,8 @@ define('zehirwallet/services/resource', ['exports'], function (exports) {
         }
       },
       'en': {
+        'applicationName': 'Zehir Ether Wallet',
+        'network': "Network",
         'cs': {
           'pageTitle': 'Cold Staking Operations - Testnet',
           'privateKey': 'Private Key',
@@ -1212,7 +1154,9 @@ define('zehirwallet/services/resource', ['exports'], function (exports) {
           'operations': 'Operations / Logs',
           'sendToCsContract_confirmMessage': '|amount| CLO will be transferred to cold staking smart contract. Do you approve?',
           'sendToWalletConfirmMessage': "|amount| CLO will be sent to the wallet address mentioned below. Do you approve? |walletAddress|",
-          'privateKeyForTest': 'You can use the following private key to test the application.',
+          //'privateKeyForTest':'You can click here to enter the private key required to test the application.',  
+          'privateKeyForTest': 'You can click here to enter required private key for testing.',
+          //'privateKeyForTest_old':'You can use the following private key to test the application.',
           'transfer': 'Transfer',
           'targetWalletAdress': 'Target Wallet Adress',
           'amountToSend': 'Amount To Send',
@@ -1272,21 +1216,13 @@ define("zehirwallet/templates/components/nav-bar", ["exports"], function (export
   });
   exports.default = Ember.HTMLBars.template({ "id": "3tiRviEV", "block": "{\"symbols\":[],\"statements\":[[6,\"ul\"],[9,\"class\",\"nav navbar-nav\"],[7],[0,\"\\n  \"],[4,\"link-to\",[\"index\"],[[\"tagName\"],[\"li\"]],{\"statements\":[[6,\"a\"],[9,\"href\",\"\"],[7],[0,\"Cold Staking\"],[8]],\"parameters\":[]},null],[0,\"\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "zehirwallet/templates/components/nav-bar.hbs" } });
 });
-define("zehirwallet/templates/components/select-wallet", ["exports"], function (exports) {
-  "use strict";
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.default = Ember.HTMLBars.template({ "id": "YJPDdhqb", "block": "{\"symbols\":[\"item\",\"&default\"],\"statements\":[[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"col-sm-12\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"btn-group pull-right\"],[7],[0,\"\\n      \"],[6,\"a\"],[9,\"class\",\"btn btn-sm btn-success\"],[3,\"action\",[[19,0,[]],\"changeLanguage\",\"tr\"]],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"badge\"],[7],[1,[25,\"get-resource\",null,[[\"key\"],[\"language.tr\"]]],false],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"a\"],[9,\"class\",\"btn btn-sm btn-success\"],[3,\"action\",[[19,0,[]],\"changeLanguage\",\"en\"]],[7],[6,\"span\"],[9,\"class\",\"badge\"],[7],[1,[25,\"get-resource\",null,[[\"key\"],[\"language.en\"]]],false],[8],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\" \"],[8],[0,\"\\n\\n\"],[4,\"if\",[[20,[\"selectedWallet\"]]],null,{\"statements\":[[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"col-sm-6\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"panel panel-success\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"panel-heading\"],[7],[0,\"\\n        \"],[6,\"h3\"],[9,\"class\",\"panel-title\"],[7],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.wallet\"]]],false],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"panel-body\"],[7],[0,\"\\n        \"],[6,\"form\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"form-group\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"control-label\"],[7],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.walletAdress\"]]],false],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"type\",\"class\",\"value\",\"disabled\"],[\"text\",\"form-control\",[20,[\"selectedWallet\",\"address\"]],true]]],false],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"form-group\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"control-label\"],[7],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.balance\"]]],false],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"input-group\"],[7],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"type\",\"class\",\"value\",\"disabled\"],[\"text\",\"form-control text-right\",[20,[\"balance\"]],true]]],false],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"input-group-addon btn btn-success\"],[3,\"action\",[[19,0,[]],\"loadBalanceInfo\"]],[7],[0,\"\\n                \"],[6,\"i\"],[9,\"class\",\"glyphicon glyphicon-refresh\"],[7],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"btn-group\"],[7],[0,\"\\n            \"],[6,\"button\"],[9,\"class\",\"btn btn-sm btn-danger\"],[3,\"action\",[[19,0,[]],\"removeWalletInfo\"]],[7],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.changeWallet\"]]],false],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"panel panel-success\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"panel-heading\"],[7],[0,\"\\n        \"],[6,\"h3\"],[9,\"class\",\"panel-title\"],[7],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.transfer\"]]],false],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"panel-body\"],[7],[0,\"\\n        \"],[6,\"form\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"form-group\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"control-label\"],[7],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.targetWalletAdress\"]]],false],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"type\",\"class\",\"value\"],[\"text\",\"form-control\",[20,[\"targetWalletAdress\"]]]]],false],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"form-group\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"control-label\"],[7],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.amountToSend\"]]],false],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"input-group\"],[7],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"type\",\"class\",\"value\",\"min\"],[\"number\",\"form-control text-right\",[20,[\"amountToSend\"]],1]]],false],[0,\"\\n              \"],[6,\"a\"],[10,\"class\",[26,[\"input-group-addon btn btn-success \",[25,\"if\",[[20,[\"sendToWalletIsDisabled\"]],\"disabled\",\"\"],null]]]],[3,\"action\",[[19,0,[]],\"sendToWallet\"]],[7],[0,\"\\n                \"],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.sendToWallet\"]]],false],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"col-sm-6\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"panel panel-success\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"panel-heading\"],[7],[0,\"\\n        \"],[6,\"h3\"],[9,\"class\",\"panel-title\"],[7],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.coldStaking\"]]],false],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"panel-body\"],[7],[0,\"\\n        \"],[6,\"form\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"form-group\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"control-label\"],[7],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.contractAddress\"]]],false],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"type\",\"class\",\"value\",\"disabled\"],[\"text\",\"form-control\",[20,[\"contractAddress\"]],true]]],false],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"form-group\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"control-label\"],[7],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.amount\"]]],false],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"input-group\"],[7],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"type\",\"class\",\"value\",\"min\"],[\"number\",\"form-control text-right\",[20,[\"amount\"]],1]]],false],[0,\"\\n              \"],[6,\"a\"],[10,\"class\",[26,[\"input-group-addon btn btn-success \",[25,\"if\",[[20,[\"sendToCsContractIsDisabled\"]],\"disabled\",\"\"],null]]]],[3,\"action\",[[19,0,[]],\"sendToCsContract\"]],[7],[0,\"\\n                \"],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.sendToCsContract\"]]],false],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"form-group\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"control-label\"],[7],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.stakeAmount\"]]],false],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"input-group\"],[7],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"type\",\"class\",\"value\",\"disabled\"],[\"text\",\"form-control text-right\",[20,[\"stakeAmount\"]],true]]],false],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"input-group-addon btn btn-success\"],[3,\"action\",[[19,0,[]],\"loadStakingInfo\"]],[7],[0,\"\\n                \"],[6,\"i\"],[9,\"class\",\"glyphicon glyphicon-refresh\"],[7],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"form-group\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"control-label\"],[7],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.currentRewards\"]]],false],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"type\",\"class\",\"value\",\"disabled\"],[\"text\",\"form-control text-right\",[20,[\"currentRewards\"]],true]]],false],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"form-group\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"control-label\"],[7],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.stakeTime\"]]],false],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"type\",\"class\",\"value\",\"disabled\"],[\"text\",\"form-control\",[20,[\"stakeTime\"]],true]]],false],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"col-sm-12 btn-group\"],[7],[0,\"\\n            \"],[6,\"button\"],[10,\"class\",[26,[\"btn btn-sm btn-success col-sm-6 \",[25,\"if\",[[20,[\"withdrawIsDisabled\"]],\"disabled\",\"\"],null]]]],[3,\"action\",[[19,0,[]],\"withdrawStake\"]],[7],[0,\"\\n              \"],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.withdrawStake\"]]],false],[0,\" \"],[6,\"span\"],[9,\"class\",\"badge\"],[7],[1,[18,\"allCoins\"],false],[8],[8],[0,\"\\n            \"],[6,\"button\"],[10,\"class\",[26,[\"btn btn-sm btn-success  col-sm-6 \",[25,\"if\",[[20,[\"withdrawIsDisabled\"]],\"disabled\",\"\"],null]]]],[3,\"action\",[[19,0,[]],\"withdrawClaim\"]],[7],[0,\"\\n              \"],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.withdrawClaim\"]]],false],[0,\" \"],[6,\"span\"],[9,\"class\",\"badge\"],[7],[1,[18,\"currentRewardsFormatted\"],false],[8],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"col-sm-12\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"panel panel-success\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"panel-heading\"],[7],[0,\"\\n        \"],[6,\"h3\"],[9,\"class\",\"panel-title\"],[7],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.wallet\"]]],false],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"panel-body\"],[7],[0,\"\\n        \"],[6,\"form\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"form-group\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"control-label\"],[7],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.privateKey\"]]],false],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"type\",\"class\",\"value\",\"autocomplete\"],[\"password\",\"form-control\",[20,[\"privateKey\"]],\"off\"]]],false],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"btn btn-sm btn-success\"],[3,\"action\",[[19,0,[]],\"selectWallet\"]],[7],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.loadWallet\"]]],false],[8],[0,\"\\n          \"],[6,\"hr\"],[7],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"col-sm-12\"],[7],[0,\"\\n              \"],[6,\"i\"],[7],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.privateKeyForTest\"]]],false],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"badge\"],[7],[0,\"2468d512f259637cea4c690aeb811cdd7a9af164af775ea03d8e2e21707491be\"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"]],\"parameters\":[]}],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"col-sm-12\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"panel panel-success\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"panel-heading\"],[7],[0,\"\\n        \"],[6,\"h3\"],[9,\"class\",\"panel-title\"],[7],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.operations\"]]],false],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"panel-body\"],[7],[0,\"\\n        \"],[6,\"table\"],[9,\"class\",\"table\"],[7],[0,\"\\n          \"],[6,\"tbody\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"logs\"]]],null,{\"statements\":[[0,\"            \"],[6,\"tr\"],[10,\"class\",[26,[[19,1,[\"class\"]]]]],[7],[0,\"\\n              \"],[6,\"td\"],[7],[1,[19,1,[\"message\"]],false],[8],[0,\"\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"],[11,2]],\"hasEval\":false}", "meta": { "moduleName": "zehirwallet/templates/components/select-wallet.hbs" } });
-});
 define("zehirwallet/templates/index", ["exports"], function (exports) {
   "use strict";
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "KVc3KHxZ", "block": "{\"symbols\":[],\"statements\":[[1,[18,\"select-wallet\"],false],[0,\"\\n            \\n\\n\"],[1,[18,\"outlet\"],false]],\"hasEval\":false}", "meta": { "moduleName": "zehirwallet/templates/index.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "3Z369zEy", "block": "{\"symbols\":[\"item\",\"network\"],\"statements\":[[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"col-sm-12\"],[7],[0,\"\\n    \"],[6,\"h3\"],[9,\"class\",\"text-center\"],[7],[1,[25,\"get-resource\",null,[[\"key\"],[\"applicationName\"]]],false],[8],[0,\"\\n    \"],[6,\"h3\"],[9,\"class\",\"text-center\"],[7],[6,\"small\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"label label-default \"],[7],[1,[20,[\"config\",\"currentNetwork\",\"description\"]],false],[8],[0,\"\\n      \"],[8],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"col-sm-12\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"btn-group\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"networks\"]]],null,{\"statements\":[[0,\"      \"],[6,\"a\"],[10,\"class\",[26,[\"btn btn-xs btn-success \",[25,\"if\",[[25,\"eq\",[[19,2,[\"key\"]],[20,[\"config\",\"currentNetworkKey\"]]],null],\"active\",\"\"],null]]]],[3,\"action\",[[19,0,[]],\"changeNetwork\",[19,2,[\"key\"]]]],[7],[0,\"\\n        \"],[6,\"span\"],[7],[1,[19,2,[\"name\"]],false],[8],[0,\"\\n      \"],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"btn-group pull-right\"],[7],[0,\"\\n      \"],[6,\"a\"],[10,\"class\",[26,[\"btn btn-xs btn-success \",[25,\"if\",[[25,\"eq\",[\"tr\",[20,[\"resource\",\"language\"]]],null],\"active\",\"\"],null]]]],[3,\"action\",[[19,0,[]],\"changeLanguage\",\"tr\"]],[7],[0,\"\\n        \"],[6,\"span\"],[7],[1,[25,\"get-resource\",null,[[\"key\"],[\"language.tr\"]]],false],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"a\"],[10,\"class\",[26,[\"btn btn-xs btn-success \",[25,\"if\",[[25,\"eq\",[\"en\",[20,[\"resource\",\"language\"]]],null],\"active\",\"\"],null]]]],[3,\"action\",[[19,0,[]],\"changeLanguage\",\"en\"]],[7],[0,\"\\n        \"],[6,\"span\"],[7],[1,[25,\"get-resource\",null,[[\"key\"],[\"language.en\"]]],false],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\" \"],[8],[0,\"\\n\\n\"],[4,\"if\",[[20,[\"selectedWallet\"]]],null,{\"statements\":[[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"col-sm-6\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"panel panel-success\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"panel-heading\"],[7],[0,\"\\n        \"],[6,\"h3\"],[9,\"class\",\"panel-title\"],[7],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.wallet\"]]],false],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"panel-body\"],[7],[0,\"\\n        \"],[6,\"form\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"form-group\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"control-label\"],[7],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.walletAdress\"]]],false],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"type\",\"class\",\"value\",\"disabled\"],[\"text\",\"form-control\",[20,[\"selectedWallet\",\"address\"]],true]]],false],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"form-group\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"control-label\"],[7],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.balance\"]]],false],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"input-group\"],[7],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"type\",\"class\",\"value\",\"disabled\"],[\"text\",\"form-control text-right\",[20,[\"balance\"]],true]]],false],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"input-group-addon btn btn-success\"],[3,\"action\",[[19,0,[]],\"loadBalanceInfo\"]],[7],[0,\"\\n                \"],[6,\"i\"],[9,\"class\",\"glyphicon glyphicon-refresh\"],[7],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"btn-group\"],[7],[0,\"\\n            \"],[6,\"button\"],[9,\"class\",\"btn btn-sm btn-danger\"],[3,\"action\",[[19,0,[]],\"removeWalletInfo\"]],[7],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.changeWallet\"]]],false],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"panel panel-success\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"panel-heading\"],[7],[0,\"\\n        \"],[6,\"h3\"],[9,\"class\",\"panel-title\"],[7],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.transfer\"]]],false],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"panel-body\"],[7],[0,\"\\n        \"],[6,\"form\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"form-group\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"control-label\"],[7],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.targetWalletAdress\"]]],false],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"type\",\"class\",\"value\"],[\"text\",\"form-control\",[20,[\"targetWalletAdress\"]]]]],false],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"form-group\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"control-label\"],[7],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.amountToSend\"]]],false],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"input-group\"],[7],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"type\",\"class\",\"value\",\"min\"],[\"number\",\"form-control text-right\",[20,[\"amountToSend\"]],1]]],false],[0,\"\\n              \"],[6,\"a\"],[10,\"class\",[26,[\"input-group-addon btn btn-success \",[25,\"if\",[[20,[\"sendToWalletIsDisabled\"]],\"disabled\",\"\"],null]]]],[3,\"action\",[[19,0,[]],\"sendToWallet\"]],[7],[0,\"\\n                \"],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.sendToWallet\"]]],false],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"col-sm-6\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"panel panel-success\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"panel-heading\"],[7],[0,\"\\n        \"],[6,\"h3\"],[9,\"class\",\"panel-title\"],[7],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.coldStaking\"]]],false],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"panel-body\"],[7],[0,\"\\n        \"],[6,\"form\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"form-group\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"control-label\"],[7],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.contractAddress\"]]],false],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"type\",\"class\",\"value\",\"disabled\"],[\"text\",\"form-control\",[20,[\"contractAddress\"]],true]]],false],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"form-group\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"control-label\"],[7],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.amount\"]]],false],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"input-group\"],[7],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"type\",\"class\",\"value\",\"min\"],[\"number\",\"form-control text-right\",[20,[\"amount\"]],1]]],false],[0,\"\\n              \"],[6,\"a\"],[10,\"class\",[26,[\"input-group-addon btn btn-success \",[25,\"if\",[[20,[\"sendToCsContractIsDisabled\"]],\"disabled\",\"\"],null]]]],[3,\"action\",[[19,0,[]],\"sendToCsContract\"]],[7],[0,\"\\n                \"],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.sendToCsContract\"]]],false],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"form-group\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"control-label\"],[7],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.stakeAmount\"]]],false],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"input-group\"],[7],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"type\",\"class\",\"value\",\"disabled\"],[\"text\",\"form-control text-right\",[20,[\"stakeAmount\"]],true]]],false],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"input-group-addon btn btn-success\"],[3,\"action\",[[19,0,[]],\"loadStakingInfo\"]],[7],[0,\"\\n                \"],[6,\"i\"],[9,\"class\",\"glyphicon glyphicon-refresh\"],[7],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"form-group\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"control-label\"],[7],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.currentRewards\"]]],false],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"type\",\"class\",\"value\",\"disabled\"],[\"text\",\"form-control text-right\",[20,[\"currentRewards\"]],true]]],false],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"form-group\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"control-label\"],[7],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.stakeTime\"]]],false],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"type\",\"class\",\"value\",\"disabled\"],[\"text\",\"form-control\",[20,[\"stakeTime\"]],true]]],false],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"col-sm-12 btn-group\"],[7],[0,\"\\n            \"],[6,\"button\"],[10,\"class\",[26,[\"btn btn-sm btn-success col-sm-6 \",[25,\"if\",[[20,[\"withdrawIsDisabled\"]],\"disabled\",\"\"],null]]]],[3,\"action\",[[19,0,[]],\"withdrawStake\"]],[7],[0,\"\\n              \"],[6,\"div\"],[7],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.withdrawStake\"]]],false],[8],[0,\"\\n              \"],[6,\"span\"],[9,\"class\",\"badge\"],[7],[1,[18,\"allCoins\"],false],[8],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"button\"],[10,\"class\",[26,[\"btn btn-sm btn-success  col-sm-6 \",[25,\"if\",[[20,[\"withdrawIsDisabled\"]],\"disabled\",\"\"],null]]]],[3,\"action\",[[19,0,[]],\"withdrawClaim\"]],[7],[0,\"\\n              \"],[6,\"div\"],[7],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.withdrawClaim\"]]],false],[8],[0,\"\\n              \"],[6,\"span\"],[9,\"class\",\"badge\"],[7],[1,[18,\"currentRewardsFormatted\"],false],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"col-sm-12\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"panel panel-success\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"panel-heading\"],[7],[0,\"\\n        \"],[6,\"h3\"],[9,\"class\",\"panel-title\"],[7],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.wallet\"]]],false],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"panel-body\"],[7],[0,\"\\n        \"],[6,\"form\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"form-group\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"control-label\"],[7],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.privateKey\"]]],false],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"type\",\"class\",\"value\",\"autocomplete\"],[\"password\",\"form-control\",[20,[\"privateKey\"]],\"off\"]]],false],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"btn btn-sm btn-success\"],[3,\"action\",[[19,0,[]],\"selectWallet\"]],[7],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.loadWallet\"]]],false],[8],[0,\"\\n          \"],[6,\"hr\"],[7],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row pointer\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"col-sm-12\"],[7],[0,\"\\n              \"],[6,\"u\"],[7],[0,\"\\n                \"],[6,\"i\"],[9,\"style\",\"cursor:pointer\"],[3,\"action\",[[19,0,[]],\"privateKeyForTest\"]],[7],[0,\"\\n                  \"],[6,\"a\"],[9,\"href\",\"#\"],[7],[0,\"\\n                    \"],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.privateKeyForTest\"]]],false],[0,\"\\n                  \"],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"]],\"parameters\":[]}],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"col-sm-12\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"panel panel-success\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"panel-heading\"],[7],[0,\"\\n        \"],[6,\"h3\"],[9,\"class\",\"panel-title\"],[7],[1,[25,\"get-resource\",null,[[\"key\"],[\"cs.operations\"]]],false],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"panel-body\"],[7],[0,\"\\n        \"],[6,\"table\"],[9,\"class\",\"table\"],[7],[0,\"\\n          \"],[6,\"tbody\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"logs\"]]],null,{\"statements\":[[0,\"            \"],[6,\"tr\"],[10,\"class\",[26,[[19,1,[\"class\"]]]]],[7],[0,\"\\n              \"],[6,\"td\"],[7],[1,[19,1,[\"message\"]],false],[8],[0,\"\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\\n\"],[1,[18,\"outlet\"],false]],\"hasEval\":false}", "meta": { "moduleName": "zehirwallet/templates/index.hbs" } });
 });
 define("zehirwallet/templates/simulator", ["exports"], function (exports) {
   "use strict";

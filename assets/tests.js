@@ -25,14 +25,24 @@ define('zehirwallet/tests/app.lint-test', [], function () {
     assert.ok(true, 'components/nav-bar.js should pass ESLint\n\n');
   });
 
-  QUnit.test('components/select-wallet.js', function (assert) {
+  QUnit.test('controllers/index.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/select-wallet.js should pass ESLint\n\n153:36 - \'countdown\' is not defined. (no-undef)\n240:9 - \'countdown\' is not defined. (no-undef)\n250:9 - \'countdown\' is not defined. (no-undef)');
+    assert.ok(false, 'controllers/index.js should pass ESLint\n\n173:36 - \'countdown\' is not defined. (no-undef)\n262:9 - \'countdown\' is not defined. (no-undef)\n272:9 - \'countdown\' is not defined. (no-undef)');
   });
 
-  QUnit.test('initializers/injector.js', function (assert) {
+  QUnit.test('helpers/eq.js', function (assert) {
     assert.expect(1);
-    assert.ok(true, 'initializers/injector.js should pass ESLint\n\n');
+    assert.ok(true, 'helpers/eq.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('initializers/config.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'initializers/config.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('initializers/resource.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'initializers/resource.js should pass ESLint\n\n');
   });
 
   QUnit.test('resolver.js', function (assert) {
@@ -47,7 +57,7 @@ define('zehirwallet/tests/app.lint-test', [], function () {
 
   QUnit.test('routes/application.js', function (assert) {
     assert.expect(1);
-    assert.ok(true, 'routes/application.js should pass ESLint\n\n');
+    assert.ok(false, 'routes/application.js should pass ESLint\n\n2:8 - \'Ember\' is defined but never used. (no-unused-vars)\n5:3 - \'observer\' is defined but never used. (no-unused-vars)\n6:3 - \'computed\' is defined but never used. (no-unused-vars)');
   });
 
   QUnit.test('routes/index.js', function (assert) {
@@ -233,33 +243,24 @@ define('zehirwallet/tests/integration/components/nav-bar-test', ['ember-qunit'],
     assert.equal(this.$().text().trim(), 'template block text');
   });
 });
-define('zehirwallet/tests/integration/components/select-wallet-test', ['ember-qunit'], function (_emberQunit) {
+define('zehirwallet/tests/integration/helpers/eq-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
-  (0, _emberQunit.moduleForComponent)('select-wallet', 'Integration | Component | select wallet', {
+  (0, _emberQunit.moduleForComponent)('eq', 'helper:eq', {
     integration: true
   });
 
+  // Replace this with your real tests.
   (0, _emberQunit.test)('it renders', function (assert) {
-    // Set any properties with this.set('myProperty', 'value');
-    // Handle any actions with this.on('myAction', function(val) { ... });
+    this.set('inputValue', '1234');
 
     this.render(Ember.HTMLBars.template({
-      "id": "Bzxjn1mA",
-      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"select-wallet\"],false]],\"hasEval\":false}",
+      "id": "gdSaTPqE",
+      "block": "{\"symbols\":[],\"statements\":[[1,[25,\"eq\",[[20,[\"inputValue\"]]],null],false]],\"hasEval\":false}",
       "meta": {}
     }));
 
-    assert.equal(this.$().text().trim(), '');
-
-    // Template block usage:
-    this.render(Ember.HTMLBars.template({
-      "id": "42ptfTU2",
-      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"select-wallet\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
-      "meta": {}
-    }));
-
-    assert.equal(this.$().text().trim(), 'template block text');
+    assert.equal(this.$().text().trim(), '1234');
   });
 });
 define('zehirwallet/tests/test-helper', ['zehirwallet/tests/helpers/resolver', 'ember-qunit', 'ember-cli-qunit'], function (_resolver, _emberQunit, _emberCliQunit) {
@@ -308,9 +309,9 @@ define('zehirwallet/tests/tests.lint-test', [], function () {
     assert.ok(true, 'integration/components/nav-bar-test.js should pass ESLint\n\n');
   });
 
-  QUnit.test('integration/components/select-wallet-test.js', function (assert) {
+  QUnit.test('integration/helpers/eq-test.js', function (assert) {
     assert.expect(1);
-    assert.ok(true, 'integration/components/select-wallet-test.js should pass ESLint\n\n');
+    assert.ok(true, 'integration/helpers/eq-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('test-helper.js', function (assert) {
@@ -318,9 +319,19 @@ define('zehirwallet/tests/tests.lint-test', [], function () {
     assert.ok(true, 'test-helper.js should pass ESLint\n\n');
   });
 
-  QUnit.test('unit/initializers/injector-test.js', function (assert) {
+  QUnit.test('unit/controllers/index-test.js', function (assert) {
     assert.expect(1);
-    assert.ok(true, 'unit/initializers/injector-test.js should pass ESLint\n\n');
+    assert.ok(true, 'unit/controllers/index-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('unit/initializers/config-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/initializers/config-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('unit/initializers/resource-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/initializers/resource-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('unit/routes/application-test.js', function (assert) {
@@ -348,10 +359,24 @@ define('zehirwallet/tests/tests.lint-test', [], function () {
     assert.ok(true, 'unit/services/simulator-test.js should pass ESLint\n\n');
   });
 });
-define('zehirwallet/tests/unit/initializers/injector-test', ['cold-staking-app/initializers/injector', 'qunit', 'zehirwallet/tests/helpers/destroy-app'], function (_injector, _qunit, _destroyApp) {
+define('zehirwallet/tests/unit/controllers/index-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
-  (0, _qunit.module)('Unit | Initializer | injector', {
+  (0, _emberQunit.moduleFor)('controller:index', 'Unit | Controller | index', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
+
+  // Replace this with your real tests.
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var controller = this.subject();
+    assert.ok(controller);
+  });
+});
+define('zehirwallet/tests/unit/initializers/config-test', ['zehirwallet/initializers/config', 'qunit', 'zehirwallet/tests/helpers/destroy-app'], function (_config, _qunit, _destroyApp) {
+  'use strict';
+
+  (0, _qunit.module)('Unit | Initializer | config', {
     beforeEach: function beforeEach() {
       var _this = this;
 
@@ -367,7 +392,32 @@ define('zehirwallet/tests/unit/initializers/injector-test', ['cold-staking-app/i
 
   // Replace this with your real tests.
   (0, _qunit.test)('it works', function (assert) {
-    (0, _injector.initialize)(this.application);
+    (0, _config.initialize)(this.application);
+
+    // you would normally confirm the results of the initializer here
+    assert.ok(true);
+  });
+});
+define('zehirwallet/tests/unit/initializers/resource-test', ['zehirwallet/initializers/resource', 'qunit', 'zehirwallet/tests/helpers/destroy-app'], function (_resource, _qunit, _destroyApp) {
+  'use strict';
+
+  (0, _qunit.module)('Unit | Initializer | resource', {
+    beforeEach: function beforeEach() {
+      var _this = this;
+
+      Ember.run(function () {
+        _this.application = Ember.Application.create();
+        _this.application.deferReadiness();
+      });
+    },
+    afterEach: function afterEach() {
+      (0, _destroyApp.default)(this.application);
+    }
+  });
+
+  // Replace this with your real tests.
+  (0, _qunit.test)('it works', function (assert) {
+    (0, _resource.initialize)(this.application);
 
     // you would normally confirm the results of the initializer here
     assert.ok(true);
