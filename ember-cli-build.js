@@ -28,5 +28,7 @@ module.exports = function (defaults) {
     }]
   });
   app.import('vendor/countdown/countdown.js');
+  
+  app.import('vendor/panelWithNavTabs/style.css');
   return app.toTree();
 };

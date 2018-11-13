@@ -16,7 +16,7 @@ export default Controller.extend({
     }
     return array;
   }),
-  provider:computed('config.currentNetwork',function(){
+  provider: computed('config.currentNetwork', function () {
     return new ethers.providers.JsonRpcProvider(this.get('config.currentNetwork.url'));
   }),
   currentNetworkKeyChanged: observer('config.currentNetworkKey', function () {
@@ -25,6 +25,7 @@ export default Controller.extend({
   }),
   selectedWallet: null,
   privateKey: '',
+  keyStoreJson: '',
   amount: 0,
   contractAddress: computed(function () {
     return this.get('config.coldStaking.contractAddress');
@@ -52,34 +53,52 @@ export default Controller.extend({
   currentRewardsFormatted: computed('currentRewards', 'stakeAmount', function () {
     return (this.get('currentRewards') ? parseFloat(this.get('currentRewards')) : 0).toFixed(2);
   }),
+  showInfo(type,message){
+    toastr.options = {
+      "closeButton": false,
+      "debug": false,
+      "newestOnTop": false,
+      "progressBar": false,
+      "positionClass": "toast-bottom-full-width",
+      "preventDuplicates": false,
+      "onclick": null,
+      "showDuration": "300",
+      "hideDuration": "1000",
+      "timeOut": "5000",
+      "extendedTimeOut": "1000",
+      "showEasing": "swing",
+      "hideEasing": "linear",
+      "showMethod": "fadeIn",
+      "hideMethod": "fadeOut"
+    };
+    toastr[type](message);
+  },
   addInfo(message) {
-    this.get('logs').insertAt(0, {
-      message: message,
-      class: 'info'
-    });
+    this.showInfo("info",message);
   },
   addSuccess(message) {
-    this.get('logs').insertAt(0, {
-      message: message,
-      class: 'success'
-    });
+    this.showInfo("success",message);
   },
   addError(message) {
-    this.get('logs').insertAt(0, {
-      message: message,
-      class: 'danger'
-    });
+    this.showInfo("error",message);
   },
+
   actions: {
-    privateKeyForTest(){
-      this.set('privateKey',this.get('config.privateKeyForTest'));
+    selectKeyStoreFile(result) {
+      if (result.files.length > 0) {
+        result.files[0].readAsText(keyStore => {
+          this.set('keyStoreJson', keyStore);
+        });
+      }
+    },
+    privateKeyForTest() {
+      this.set('privateKey', this.get('config.privateKeyForTest'));
     },
     sendToCsContract() {
       if (this.get('sendToCsContractIsDisabled')) return;
-      let privateKey = this.get('privateKey');
       let contractAddress = this.get('contractAddress');
       let provider = this.get('provider');
-      let wallet = new ethers.Wallet(privateKey, provider);
+      let wallet = this.get('selectedWallet');
       let amountTmp = this.get("amount");
       let amount = ethers.utils.parseEther(amountTmp);
 
@@ -112,10 +131,9 @@ export default Controller.extend({
     },
     sendToWallet() {
       if (this.get('sendToWalletIsDisabled')) return;
-      let privateKey = this.get('privateKey');
       let targetWalletAdress = this.get('targetWalletAdress');
       let provider = this.get('provider');
-      let wallet = new ethers.Wallet(privateKey, provider);
+      let wallet = this.get('selectedWallet');
       let amountTmp = this.get("amountToSend");
       let amount = ethers.utils.parseEther(amountTmp);
 
@@ -162,7 +180,7 @@ export default Controller.extend({
         contract.stake_reward(walletAddress)
           .then(currentRewards => {
             this.set('currentRewards', ethers.utils.formatEther(currentRewards));
-          }).catch(err => this.addError(err));
+          }).catch(() => {});
         contract.staker(walletAddress)
           .then(staker => {
             this.set('stakeAmount', ethers.utils.formatEther(staker.amount));
@@ -210,39 +228,63 @@ export default Controller.extend({
         this.addError(error);
       }
     },
-    selectWallet() {
+    selectWallet(accessType) {
+      let provider = this.get("provider");
+
+      this.set('overrides', {
+        "chainId": this.get('config.currentNetwork.chainId'),
+        "gasLimit": this.get('config.currentNetwork.gasLimit'),
+        "gasPrice": this.get('provider').getGasPrice()
+      });
+
       try {
-        let privateKey = this.get('privateKey');
-        if (!privateKey) {
-          this.addError("Private Key is invalid!");
-          return;
-        }
-        
-        let provider = this.get("provider");
 
-        this.set('overrides', {
-          "chainId": this.get('config.currentNetwork.chainId'),
-          "gasLimit": this.get('config.currentNetwork.gasLimit'),
-          "gasPrice": this.get('provider').getGasPrice()
-        });
-        let wallet = new ethers.Wallet(privateKey, provider);
-        this.set("selectedWallet", wallet);
-        let contract = new ethers.Contract(this.get('contractAddress'), this.get('config.coldStaking.contractAbi'), wallet);
-        contract.on('StartStaking', (addr, value, amount, time) => {
-          this.addSuccess(`Started Staking. Params => addr:${addr}, value:${ethers.utils.formatEther(value)}, amount:${ethers.utils.formatEther(amount)}, time:${moment(new Date(parseInt(time.toString()) * 1000)).format()}`);
-          this.send('loadInfo');
-        });
-        contract.on('WithdrawStake', (staker, amount) => {
-          this.addSuccess(`Withdrawed Stake. Params => staker:${staker}, amount:${ethers.utils.formatEther(amount)}`);
-          this.send('loadInfo');
-        });
-        contract.on('Claim', (staker, reward) => {
-          this.addSuccess(`Claimed Reward. Params => staker:${staker}, reward:${ethers.utils.formatEther(reward)}`);
-          this.send('loadInfo');
-        });
 
-        this.set('contract', contract);
-        this.send('loadInfo');
+
+        new Ember.RSVP.hash({
+          "wallet": new Ember.RSVP.Promise(walletResolve => {
+            if (accessType == "keyStoreFile") {
+              ethers.Wallet.fromEncryptedJson(this.get('keyStoreJson'), this.get('password')).then(decryptedWallet => {
+                  walletResolve(new ethers.Wallet(decryptedWallet.privateKey, provider));
+                })
+                .catch(error => this.addError(error));
+            } else if (accessType == "privateKey") {
+              let privateKey = this.get('privateKey');
+              if (!privateKey)
+                this.addError("Private Key is invalid!");
+              else {
+                walletResolve(new ethers.Wallet(privateKey, provider));
+              }
+            }
+          })
+        }).then(result => {
+          let wallet = result.wallet;
+          if (!wallet) return;
+          this.set("selectedWallet", wallet);
+          let contract = new ethers.Contract(this.get('contractAddress'), this.get('config.coldStaking.contractAbi'), wallet);
+          contract.on('StartStaking', (addr, value, amount, time) => {
+            if (addr == wallet.address) {
+              this.addSuccess(`Started Staking. Params => addr:${addr}, value:${ethers.utils.formatEther(value)}, amount:${ethers.utils.formatEther(amount)}, time:${moment(new Date(parseInt(time.toString()) * 1000)).format()}`);
+              this.send('loadInfo');
+            }
+          });
+          contract.on('WithdrawStake', (staker, amount) => {
+            if (staker == wallet.address) {
+              this.addSuccess(`Withdrawed Stake. Params => staker:${staker}, amount:${ethers.utils.formatEther(amount)}`);
+              this.send('loadInfo');
+            }
+          });
+          contract.on('Claim', (staker, reward) => {
+            if (staker == wallet.address) {
+              this.addSuccess(`Claimed Reward. Params => staker:${staker}, reward:${ethers.utils.formatEther(reward)}`);
+              this.send('loadInfo');
+            }
+          });
+
+          this.set('contract', contract);
+          this.send('loadInfo');
+        })
+
       } catch (error) {
         this.addError(error);
       }
@@ -250,6 +292,8 @@ export default Controller.extend({
     removeWalletInfo() {
       this.set("selectedWallet", null);
       this.set('privateKey', null);
+      this.set('keyStoreJson', null);
+      this.set('password', null);
     },
     changeNetwork(key) {
       this.set('config.currentNetworkKey', key);

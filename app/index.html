@@ -8,18 +8,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Zehir Wallet</title>
+  
   {{content-for "head"}}
   
   <link integrity="" rel="stylesheet" href="{{rootURL}}assets/vendor.css">
   <link integrity="" rel="stylesheet" href="{{rootURL}}assets/zehirwallet.css">
-
+  <link integrity="" rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+  
   {{content-for "head-footer"}}
 </head>
 
 <body>
   {{content-for "body"}}
+  
   <script src="{{rootURL}}assets/vendor.js"></script>
   <script src="{{rootURL}}assets/zehirwallet.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
   {{content-for "body-footer"}}
 </body>

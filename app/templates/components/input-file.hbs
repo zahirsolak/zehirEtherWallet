@@ -1,0 +1,9 @@
+
+<span> {{title}} </span>
+<i class="{{icon}}"></i>
+{{#if multiple}}
+    <input type="file" multiple="multiple"/>
+{{else}}
+    <input type="file"/>
+{{/if}}
+{{yield}}

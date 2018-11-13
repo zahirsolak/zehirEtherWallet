@@ -1,26 +1,21 @@
-<div class="row">
-  <div class="col-sm-12">
-    <h3 class="text-center">{{get-resource key='applicationName'}}</h3>
-    <h3 class="text-center"><small>
-        <div class="label label-default ">{{config.currentNetwork.description}}</div>
-      </small></h3>
-  </div>
+<div class="page-header">
+  <h1>{{get-resource key='applicationName'}} <small>{{config.currentNetwork.description}}</small></h1>
 </div>
 <div class="row">
   <div class="col-sm-12">
     <div class="btn-group">
       {{#each networks as |network|}}
-      <a class="btn btn-xs btn-success {{if (eq network.key config.currentNetworkKey) "active" ""}}"
+      <a class="btn btn-sm btn-success {{if (eq network.key config.currentNetworkKey) "active" ""}}"
         {{action "changeNetwork" network.key}}>
         <span>{{network.name}}</span>
       </a>
       {{/each}}
     </div>
     <div class="btn-group pull-right">
-      <a class="btn btn-xs btn-success {{if (eq 'tr' resource.language) "active" ""}}" {{action "changeLanguage" "tr"}}>
+      <a class="btn btn-sm btn-success {{if (eq 'tr' resource.language) "active" ""}}" {{action "changeLanguage" "tr"}}>
         <span>{{get-resource key='language.tr'}}</span>
       </a>
-      <a class="btn btn-xs btn-success {{if (eq 'en' resource.language) "active" ""}}" {{action "changeLanguage" "en"}}>
+      <a class="btn btn-sm btn-success {{if (eq 'en' resource.language) "active" ""}}" {{action "changeLanguage" "en"}}>
         <span>{{get-resource key='language.en'}}</span>
       </a>
     </div>
@@ -43,7 +38,6 @@
           </div>
           <div class="form-group">
             <label class="control-label">{{get-resource key='cs.balance'}}</label>
-
             <div class="input-group">
               {{input type="text" class="form-control text-right" value=balance disabled=true}}
               <a class="input-group-addon btn btn-success" {{action "loadBalanceInfo"}}>
@@ -144,55 +138,55 @@
 {{else}}
 <div class="row">
   <div class="col-sm-12">
-    <div class="panel panel-success">
+    <div class="panel with-nav-tabs panel-success">
       <div class="panel-heading">
-        <h3 class="panel-title">{{get-resource key='cs.wallet'}}</h3>
+        <h4 class="col-sm-12">{{get-resource key='cs.questionForWalletAccessType'}}</h4>
+        <ul class="nav nav-tabs">
+          <li class="active"><a href="#tab1default" data-toggle="tab">{{get-resource key='cs.keyStoreFile'}}</a></li>
+          <li><a href="#tab2default" data-toggle="tab">{{get-resource key='cs.privateKey'}}</a></li>
+        </ul>
       </div>
       <div class="panel-body">
-        <form>
-          <div class="form-group">
-            <label class="control-label">{{get-resource key='cs.privateKey'}}</label>
-            {{input type="password" class="form-control" value=privateKey autocomplete="off"}}
+        <div class="tab-content">
+          <div class="tab-pane fade in active" id="tab1default">
+            <form>
+              <div class="form-group">
+                <label class="control-label">{{get-resource key='cs.keyStoreFile'}}</label>
+                {{input-file fileChanged="selectKeyStoreFile" class="form-control" titleResourceKey='cs.selectKeyStoreFile'}}
+              </div>
+              <div class="form-group">
+                <label class="control-label">{{get-resource key='cs.password'}}</label>
+                {{input type="password" class="form-control" value=password autocomplete="off"}}
+              </div>
+              <button class="btn btn-sm btn-success" {{action "selectWallet" "keyStoreFile"}}>{{get-resource key='cs.loadWallet'}}</button>
+            </form>
           </div>
-          <button class="btn btn-sm btn-success" {{action "selectWallet"}}>{{get-resource key='cs.loadWallet'}}</button>
-          <hr />
-          <div class="row pointer">
-            <div class="col-sm-12">
-              <u>
-                <i {{action "privateKeyForTest"}} style="cursor:pointer">
-                  <a href="#">
-                    {{get-resource key='cs.privateKeyForTest'}}
-                  </a>
-                </i>
-              </u>
-            </div>
+          <div class="tab-pane fade" id="tab2default">
+            <form>
+              <div class="form-group">
+                <label class="control-label">{{get-resource key='cs.privateKey'}}</label>
+                {{input type="password" class="form-control" value=privateKey autocomplete="off"}}
+              </div>
+
+              <button class="btn btn-sm btn-success" {{action "selectWallet" "privateKey"}}>{{get-resource key='cs.loadWallet'}}</button>
+              <hr class="hide"/>
+              <div class="row pointer hide">
+                <div class="col-sm-12">
+                  <u>
+                    <i {{action "privateKeyForTest"}} style="cursor:pointer">
+                      <a href="#">
+                        {{get-resource key='cs.privateKeyForTest'}}
+                      </a>
+                    </i>
+                  </u>
+                </div>
+              </div>
+            </form>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   </div>
 </div>
+
 {{/if}}
-<div class="row">
-  <div class="col-sm-12">
-    <div class="panel panel-success">
-      <div class="panel-heading">
-        <h3 class="panel-title">{{get-resource key='cs.operations'}}</h3>
-      </div>
-      <div class="panel-body">
-        <table class="table">
-          <tbody>
-            {{#each logs as |item|}}
-            <tr class="{{item.class}}">
-              <td>{{item.message}}</td>
-            </tr>
-            {{/each}}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-{{outlet}}

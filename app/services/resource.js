@@ -7,6 +7,11 @@ export default Service.extend({
       'applicationName':'Zehir Wallet',
       'network':"Ağ",
       'cs': {
+        'password':'Şifre',
+        'selectFile':'Dosya Seç',
+        'selectKeyStoreFile':'Keystore Dosyası Seç',
+        'questionForWalletAccessType':'Cüzdanınıza nasıl erişmek istersiniz?',
+        'keyStoreFile':'Keystore Dosyası (UTC / JSON)',
         'pageTitle': 'Cold Staking İşlemleri - Testnet',
         'privateKey': 'Özel Anahtar',
         'loadWallet': 'Cüzdanı Yükle',
@@ -45,6 +50,11 @@ export default Service.extend({
       'applicationName':'Zehir Wallet',
       'network':"Network",
       'cs': {
+        'password':'Password',
+        'selectFile':'Select File',
+        'selectKeyStoreFile':'Select Keystore File',
+        'questionForWalletAccessType':'How would you like to access your wallet?',
+        'keyStoreFile':'Keystore File (UTC / JSON)',
         'pageTitle': 'Cold Staking Operations - Testnet',
         'privateKey': 'Private Key',
         'loadWallet': 'Load Wallet',
