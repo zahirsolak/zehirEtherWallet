@@ -1091,7 +1091,7 @@ define('zehirwallet/services/resource', ['exports'], function (exports) {
     language: 'en',
     resources: {
       'tr': {
-        'applicationName': 'Zehir Ether Wallet',
+        'applicationName': 'Zehir Wallet',
         'network': "Ağ",
         'cs': {
           'pageTitle': 'Cold Staking İşlemleri - Testnet',
@@ -1129,7 +1129,7 @@ define('zehirwallet/services/resource', ['exports'], function (exports) {
         }
       },
       'en': {
-        'applicationName': 'Zehir Ether Wallet',
+        'applicationName': 'Zehir Wallet',
         'network': "Network",
         'cs': {
           'pageTitle': 'Cold Staking Operations - Testnet',
@@ -1254,6 +1254,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("zehirwallet/app")["default"].create({"name":"zehirwallet","version":"0.0.0+34634c9c"});
+  require("zehirwallet/app")["default"].create({"name":"zehirwallet","version":"0.0.0+5dba03a1"});
 }
 //# sourceMappingURL=zehirwallet.map
