@@ -1,2 +1,2 @@
-# zehirwallet - master
-zahirsolak.github.io/zehirwallet
+# Zehir Ether Wallet - master
+zahirsolak.github.io/zew
