@@ -1,2 +1,2 @@
-# Zehir Ether Wallet - master
-<a href="https://zahirsolak.github.io/ZehirEtherWallet">https://zahirsolak.github.io/ZehirEtherWallet</a>
+# Zehir Wallet - master
+<a href="https://zahirsolak.github.io/zehirwallet">https://zahirsolak.github.io/zehirwallet</a>
