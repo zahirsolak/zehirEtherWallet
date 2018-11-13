@@ -20,6 +20,11 @@ define('zehirwallet/tests/app.lint-test', [], function () {
     assert.ok(true, 'components/get-resource.js should pass ESLint\n\n');
   });
 
+  QUnit.test('components/input-file.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'components/input-file.js should pass ESLint\n\n');
+  });
+
   QUnit.test('components/nav-bar.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'components/nav-bar.js should pass ESLint\n\n');
@@ -27,7 +32,7 @@ define('zehirwallet/tests/app.lint-test', [], function () {
 
   QUnit.test('controllers/index.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'controllers/index.js should pass ESLint\n\n173:36 - \'countdown\' is not defined. (no-undef)\n262:9 - \'countdown\' is not defined. (no-undef)\n272:9 - \'countdown\' is not defined. (no-undef)');
+    assert.ok(false, 'controllers/index.js should pass ESLint\n\n57:5 - \'toastr\' is not defined. (no-undef)\n74:5 - \'toastr\' is not defined. (no-undef)\n191:36 - \'countdown\' is not defined. (no-undef)\n306:9 - \'countdown\' is not defined. (no-undef)\n316:9 - \'countdown\' is not defined. (no-undef)');
   });
 
   QUnit.test('helpers/eq.js', function (assert) {
@@ -57,7 +62,7 @@ define('zehirwallet/tests/app.lint-test', [], function () {
 
   QUnit.test('routes/application.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'routes/application.js should pass ESLint\n\n2:8 - \'Ember\' is defined but never used. (no-unused-vars)\n5:3 - \'observer\' is defined but never used. (no-unused-vars)\n6:3 - \'computed\' is defined but never used. (no-unused-vars)');
+    assert.ok(true, 'routes/application.js should pass ESLint\n\n');
   });
 
   QUnit.test('routes/index.js', function (assert) {
@@ -214,6 +219,35 @@ define('zehirwallet/tests/integration/components/get-resource-test', ['ember-qun
     assert.equal(this.$().text().trim(), 'template block text');
   });
 });
+define('zehirwallet/tests/integration/components/input-file-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('input-file', 'Integration | Component | input file', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "gMM4J/FE",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"input-file\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "EUEZ4SLP",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"input-file\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
 define('zehirwallet/tests/integration/components/nav-bar-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
@@ -302,6 +336,11 @@ define('zehirwallet/tests/tests.lint-test', [], function () {
   QUnit.test('integration/components/get-resource-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'integration/components/get-resource-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/components/input-file-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/input-file-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('integration/components/nav-bar-test.js', function (assert) {
