@@ -152,13 +152,15 @@
             <form>
               <div class="form-group">
                 <label class="control-label">{{get-resource key='cs.keyStoreFile'}}</label>
-                {{input-file fileChanged="selectKeyStoreFile" class="form-control" titleResourceKey='cs.selectKeyStoreFile'}}
+                {{input-file fileChanged="selectKeyStoreFile" class="form-control"
+                titleResourceKey='cs.selectKeyStoreFile'}}
               </div>
               <div class="form-group">
                 <label class="control-label">{{get-resource key='cs.password'}}</label>
                 {{input type="password" class="form-control" value=password autocomplete="off"}}
               </div>
-              <button class="btn btn-sm btn-success" {{action "selectWallet" "keyStoreFile"}}>{{get-resource key='cs.loadWallet'}}</button>
+              <button class="btn btn-sm btn-success" {{action "selectWallet" "keyStoreFile"}}>{{get-resource
+                key='cs.loadWallet'}}</button>
             </form>
           </div>
           <div class="tab-pane fade" id="tab2default">
@@ -168,8 +170,9 @@
                 {{input type="password" class="form-control" value=privateKey autocomplete="off"}}
               </div>
 
-              <button class="btn btn-sm btn-success" {{action "selectWallet" "privateKey"}}>{{get-resource key='cs.loadWallet'}}</button>
-              <hr class="hide"/>
+              <button class="btn btn-sm btn-success" {{action "selectWallet" "privateKey"}}>{{get-resource
+                key='cs.loadWallet'}}</button>
+              <hr class="hide" />
               <div class="row pointer hide">
                 <div class="col-sm-12">
                   <u>
@@ -188,5 +191,10 @@
     </div>
   </div>
 </div>
-
 {{/if}}
+
+<div class="row">
+  <div class="col-sm-12">
+  <small class="pull-right"><i>This is an open source project. Hosted by <a href="https://github.com/zahirsolak/zehirwallet">github.com</a>.</i></small>
+  </div>
+</div>
