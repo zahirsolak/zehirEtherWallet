@@ -1,0 +1,198 @@
+<div class="row">
+  <div class="col-sm-12">
+    <h3 class="text-center">{{get-resource key='applicationName'}}</h3>
+    <h3 class="text-center"><small>
+        <div class="label label-default ">{{config.currentNetwork.description}}</div>
+      </small></h3>
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-12">
+    <div class="btn-group">
+      {{#each networks as |network|}}
+      <a class="btn btn-xs btn-success {{if (eq network.key config.currentNetworkKey) "active" ""}}"
+        {{action "changeNetwork" network.key}}>
+        <span>{{network.name}}</span>
+      </a>
+      {{/each}}
+    </div>
+    <div class="btn-group pull-right">
+      <a class="btn btn-xs btn-success {{if (eq 'tr' resource.language) "active" ""}}" {{action "changeLanguage" "tr"}}>
+        <span>{{get-resource key='language.tr'}}</span>
+      </a>
+      <a class="btn btn-xs btn-success {{if (eq 'en' resource.language) "active" ""}}" {{action "changeLanguage" "en"}}>
+        <span>{{get-resource key='language.en'}}</span>
+      </a>
+    </div>
+  </div>
+</div>
+<div class="row">&nbsp;</div>
+
+{{#if selectedWallet}}
+<div class="row">
+  <div class="col-sm-6">
+    <div class="panel panel-success">
+      <div class="panel-heading">
+        <h3 class="panel-title">{{get-resource key='cs.wallet'}}</h3>
+      </div>
+      <div class="panel-body">
+        <form>
+          <div class="form-group">
+            <label class="control-label">{{get-resource key='cs.walletAdress'}}</label>
+            {{input type="text" class="form-control" value=selectedWallet.address disabled=true}}
+          </div>
+          <div class="form-group">
+            <label class="control-label">{{get-resource key='cs.balance'}}</label>
+
+            <div class="input-group">
+              {{input type="text" class="form-control text-right" value=balance disabled=true}}
+              <a class="input-group-addon btn btn-success" {{action "loadBalanceInfo"}}>
+                <i class="glyphicon glyphicon-refresh"></i>
+              </a>
+            </div>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-sm btn-danger" {{action "removeWalletInfo"}}>{{get-resource key='cs.changeWallet'}}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="panel panel-success">
+      <div class="panel-heading">
+        <h3 class="panel-title">{{get-resource key='cs.transfer'}}</h3>
+      </div>
+      <div class="panel-body">
+        <form>
+          <div class="form-group">
+            <label class="control-label">{{get-resource key='cs.targetWalletAdress'}}</label>
+            {{input type="text" class="form-control" value=targetWalletAdress}}
+          </div>
+          <div class="form-group">
+            <label class="control-label">{{get-resource key='cs.amountToSend'}}</label>
+            <div class="input-group">
+              {{input type="number" class="form-control text-right" value=amountToSend min=1}}
+              <a class="input-group-addon btn btn-success {{if sendToWalletIsDisabled "disabled" ""}}"
+                {{action "sendToWallet"}}>
+                {{get-resource key='cs.sendToWallet'}}
+              </a>
+            </div>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-sm-6">
+    <div class="panel panel-success">
+      <div class="panel-heading">
+        <h3 class="panel-title">{{get-resource key='cs.coldStaking'}}</h3>
+      </div>
+      <div class="panel-body">
+        <form>
+          <div class="form-group">
+            <label class="control-label">{{get-resource key='cs.contractAddress'}}</label>
+            {{input type="text" class="form-control" value=contractAddress disabled=true}}
+          </div>
+
+          <div class="form-group">
+            <label class="control-label">{{get-resource key='cs.amount'}}</label>
+            <div class="input-group">
+              {{input type="number" class="form-control text-right" value=amount min=1}}
+              <a class="input-group-addon btn btn-success {{if sendToCsContractIsDisabled "disabled" ""}}"
+                {{action "sendToCsContract"}}>
+                {{get-resource key='cs.sendToCsContract'}}
+              </a>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label">{{get-resource key='cs.stakeAmount'}}</label>
+
+            <div class="input-group">
+              {{input type="text" class="form-control text-right" value=stakeAmount disabled=true}}
+              <a class="input-group-addon btn btn-success" {{action "loadStakingInfo"}}>
+                <i class="glyphicon glyphicon-refresh"></i>
+              </a>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label">{{get-resource key='cs.currentRewards'}}</label>
+            {{input type="text" class="form-control text-right" value=currentRewards disabled=true}}
+          </div>
+          <div class="form-group">
+            <label class="control-label">{{get-resource key='cs.stakeTime'}}</label>
+            {{input type="text" class="form-control" value=stakeTime disabled=true}}
+          </div>
+          <div class="col-sm-12 btn-group">
+            <button class="btn btn-sm btn-success col-sm-6 {{if withdrawIsDisabled "disabled" ""}}"
+              {{action "withdrawStake"}}>
+              <div>{{get-resource key='cs.withdrawStake'}}</div>
+              <span class="badge">{{allCoins}}</span>
+            </button>
+            <button class="btn btn-sm btn-success  col-sm-6 {{if withdrawIsDisabled "disabled" ""}}"
+              {{action "withdrawClaim"}}>
+              <div>{{get-resource key='cs.withdrawClaim'}}</div>
+              <span class="badge">{{currentRewardsFormatted}}</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{{else}}
+<div class="row">
+  <div class="col-sm-12">
+    <div class="panel panel-success">
+      <div class="panel-heading">
+        <h3 class="panel-title">{{get-resource key='cs.wallet'}}</h3>
+      </div>
+      <div class="panel-body">
+        <form>
+          <div class="form-group">
+            <label class="control-label">{{get-resource key='cs.privateKey'}}</label>
+            {{input type="password" class="form-control" value=privateKey autocomplete="off"}}
+          </div>
+          <button class="btn btn-sm btn-success" {{action "selectWallet"}}>{{get-resource key='cs.loadWallet'}}</button>
+          <hr />
+          <div class="row pointer">
+            <div class="col-sm-12">
+              <u>
+                <i {{action "privateKeyForTest"}} style="cursor:pointer">
+                  <a href="#">
+                    {{get-resource key='cs.privateKeyForTest'}}
+                  </a>
+                </i>
+              </u>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{{/if}}
+<div class="row">
+  <div class="col-sm-12">
+    <div class="panel panel-success">
+      <div class="panel-heading">
+        <h3 class="panel-title">{{get-resource key='cs.operations'}}</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tbody>
+            {{#each logs as |item|}}
+            <tr class="{{item.class}}">
+              <td>{{item.message}}</td>
+            </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{{outlet}}
