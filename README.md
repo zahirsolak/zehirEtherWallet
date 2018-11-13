@@ -23,4 +23,4 @@ You will need the following things properly installed on your computer.
 ## Donations
 I do this because I love to develop apps. If you want to buy me a coffee or tea;
 
-CLO: 0x905545a953A47041028e771472E0420B44b2a4B0
+CLO, ETC, ETH: 0x905545a953A47041028e771472E0420B44b2a4B0
