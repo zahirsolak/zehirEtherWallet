@@ -7,6 +7,9 @@ import {
 import ethers from 'ethers';
 import moment from 'moment';
 
+let toastr=window.toastr;
+let countdown=window.countdown;
+
 export default Controller.extend({
   networks: computed(function () {
     let array = [];
