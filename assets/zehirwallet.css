@@ -7390,4 +7390,38 @@ html {
   transform: translate(-300px, 0px) scale(4);
 }
 
+body {
+  font-family: "Raleway", sans-serif;
+}
+
+/* CALLISTO - START */
+.callisto .panel-success > .panel-heading {
+  background-color: #34c88a;
+  border-color: #34c88a;
+  color: #ffffff;
+}
+
+.callisto .panel-success {
+  border-color: #34c88a;
+}
+
+.callisto .with-nav-tabs.panel-success .nav-tabs > li > a {
+  color: white;
+}
+
+.callisto .with-nav-tabs.panel-success .nav-tabs > li.active > a {
+  color: #34c88a;
+}
+
+.callisto .with-nav-tabs.panel-success .nav-tabs > li > a:hover {
+  color: green;
+  background-color: white;
+}
+
+.callisto .btn-success {
+  background-color: #34c88a !important;
+}
+
+/* CALLISTO - END */
+
 /*# sourceMappingURL=zehirwallet.css.map */
