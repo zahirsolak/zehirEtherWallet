@@ -1,48 +1,40 @@
 <div class="page-header">
-  <h1>{{get-resource key='applicationName'}} <small>{{config.currentNetwork.description}}</small></h1>
+  <h4>{{get-resource key='applicationName'}} <small class="pull-right">{{config.currentNetwork.description}}</small></h4>
 </div>
 <div class="row">
   <div class="col-sm-12">
-    <div class="btn-group">
-      {{#each networks as |network|}}
-      <a class="btn btn-sm btn-success {{if (eq network.key config.currentNetworkKey) "active" ""}}"
-        {{action "changeNetwork" network.key}}>
-        <span>{{network.name}}</span>
-      </a>
-      {{/each}}
-    </div>
-    <div class="btn-group pull-right">
-      <a class="btn btn-sm btn-success {{if (eq 'tr' resource.language) "active" ""}}" {{action "changeLanguage" "tr"}}>
-        <span>{{get-resource key='language.tr'}}</span>
-      </a>
-      <a class="btn btn-sm btn-success {{if (eq 'en' resource.language) "active" ""}}" {{action "changeLanguage" "en"}}>
-        <span>{{get-resource key='language.en'}}</span>
-      </a>
-    </div>
+    {{select-menu items=model.networks title="Network" value=config.currentNetworkKey valueField="key"
+    textField="description" onChange="onChangeNetwork"}}
+    {{select-menu items=model.languages title="Language" value=config.currentLanguageKey valueField="value"
+    textField="text" onChange="onChangeLanguage" class="pull-right"}}
   </div>
 </div>
 <div class="row">&nbsp;</div>
-
 {{#if selectedWallet}}
 <div class="row">
   <div class="col-sm-6">
     <div class="panel panel-success">
       <div class="panel-heading">
-        <h3 class="panel-title">{{get-resource key='cs.wallet'}}</h3>
+        <div class="panel-title">{{get-resource key='cs.wallet'}}</div>
       </div>
       <div class="panel-body">
         <form>
           <div class="form-group">
-            <label class="control-label">{{get-resource key='cs.walletAdress'}}</label>
+            <label class="control-label">{{get-resource key='cs.walletAddress'}}</label>
             {{input type="text" class="form-control" value=selectedWallet.address disabled=true}}
           </div>
           <div class="form-group">
             <label class="control-label">{{get-resource key='cs.balance'}}</label>
             <div class="input-group">
-              {{input type="text" class="form-control text-right" value=balance disabled=true}}
-              <a class="input-group-addon btn btn-success" {{action "loadBalanceInfo"}}>
-                <i class="glyphicon glyphicon-refresh"></i>
-              </a>
+              {{input type="text" class="form-control text-right" value=balance disabled="true"}}
+              <span class="input-group-addon">
+                {{config.currentNetwork.symbol}}
+              </span>
+              <div class="input-group-btn">
+                <button class="btn btn-success" type="button" {{action "loadBalanceInfo"}}>
+                  <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+                </button>
+              </div>
             </div>
           </div>
           <div class="btn-group">
@@ -59,17 +51,24 @@
       <div class="panel-body">
         <form>
           <div class="form-group">
-            <label class="control-label">{{get-resource key='cs.targetWalletAdress'}}</label>
-            {{input type="text" class="form-control" value=targetWalletAdress}}
+            <label class="control-label">{{get-resource key='cs.targetWalletAddress'}}</label>
+            {{input type="text" class="form-control" value=targetWalletAddress}}
           </div>
           <div class="form-group">
             <label class="control-label">{{get-resource key='cs.amountToSend'}}</label>
+
             <div class="input-group">
               {{input type="number" class="form-control text-right" value=amountToSend min=1}}
-              <a class="input-group-addon btn btn-success {{if sendToWalletIsDisabled "disabled" ""}}"
-                {{action "sendToWallet"}}>
-                {{get-resource key='cs.sendToWallet'}}
-              </a>
+              <span class="input-group-addon">
+                {{config.currentNetwork.symbol}}
+              </span>
+              <div class="input-group-btn">
+                <button class="btn btn-success{{if sendToWalletIsDisabled " disabled" ""}}" type="button"
+                  {{action "sendToWallet"}}>
+                  <span class="glyphicon glyphicon-send" aria-hidden="true"></span>
+                </button>
+              </div>
+
             </div>
           </div>
 
@@ -94,10 +93,15 @@
             <label class="control-label">{{get-resource key='cs.amount'}}</label>
             <div class="input-group">
               {{input type="number" class="form-control text-right" value=amount min=1}}
-              <a class="input-group-addon btn btn-success {{if sendToCsContractIsDisabled "disabled" ""}}"
-                {{action "sendToCsContract"}}>
-                {{get-resource key='cs.sendToCsContract'}}
-              </a>
+              <span class="input-group-addon">
+                {{config.currentNetwork.symbol}}
+              </span>
+              <div class="input-group-btn">
+                <button class="btn btn-success{{if sendToCsContractIsDisabled " disabled" ""}}" type="button"
+                  {{action "sendToCsContract"}}>
+                  <span class="glyphicon glyphicon-send" aria-hidden="true"></span>
+                </button>
+              </div>
             </div>
           </div>
           <div class="form-group">
@@ -105,14 +109,30 @@
 
             <div class="input-group">
               {{input type="text" class="form-control text-right" value=stakeAmount disabled=true}}
-              <a class="input-group-addon btn btn-success" {{action "loadStakingInfo"}}>
-                <i class="glyphicon glyphicon-refresh"></i>
-              </a>
+              <span class="input-group-addon">
+                {{config.currentNetwork.symbol}}
+              </span>
+              <div class="input-group-btn">
+                <button class="btn btn-success" type="button" {{action "loadStakingInfo"}}>
+                  <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+                </button>
+              </div>
             </div>
           </div>
           <div class="form-group">
             <label class="control-label">{{get-resource key='cs.currentRewards'}}</label>
-            {{input type="text" class="form-control text-right" value=currentRewards disabled=true}}
+
+            <div class="input-group">
+              {{input type="text" class="form-control text-right" value=currentRewards disabled=true}}
+              <span class="input-group-addon">
+                {{config.currentNetwork.symbol}}
+              </span>
+              <div class="input-group-btn">
+                <button class="btn btn-success" type="button" {{action "loadStakingInfo"}}>
+                  <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+                </button>
+              </div>
+            </div>
           </div>
           <div class="form-group">
             <label class="control-label">{{get-resource key='cs.stakeTime'}}</label>
@@ -137,55 +157,74 @@
 </div>
 {{else}}
 <div class="row">
-  <div class="col-sm-12">
+  <div class="col-sm-6">
     <div class="panel with-nav-tabs panel-success">
       <div class="panel-heading">
         <h4 class="col-sm-12">{{get-resource key='cs.questionForWalletAccessType'}}</h4>
         <ul class="nav nav-tabs">
           <li class="active"><a href="#tab1default" data-toggle="tab">{{get-resource key='cs.keyStoreFile'}}</a></li>
           <li><a href="#tab2default" data-toggle="tab">{{get-resource key='cs.privateKey'}}</a></li>
+          <li><a href="#tabWalletAddress" data-toggle="tab">{{get-resource key='cs.walletAddress'}}</a></li>
         </ul>
       </div>
       <div class="panel-body">
         <div class="tab-content">
           <div class="tab-pane fade in active" id="tab1default">
-            <form>
-              <div class="form-group">
-                <label class="control-label">{{get-resource key='cs.keyStoreFile'}}</label>
-                {{input-file fileChanged="selectKeyStoreFile" class="form-control"
-                titleResourceKey='cs.selectKeyStoreFile'}}
-              </div>
-              <div class="form-group">
-                <label class="control-label">{{get-resource key='cs.password'}}</label>
-                {{input type="password" class="form-control" value=password autocomplete="off"}}
-              </div>
-              <button class="btn btn-sm btn-success" {{action "selectWallet" "keyStoreFile"}}>{{get-resource
-                key='cs.loadWallet'}}</button>
-            </form>
+
+            <div class="form-group">
+              <label class="control-label">{{get-resource key='cs.keyStoreFile'}}</label>
+              {{input-file fileChanged="selectKeyStoreFile" class="form-control"
+              titleResourceKey='cs.selectKeyStoreFile'}}
+            </div>
+            <div class="form-group">
+              <label class="control-label">{{get-resource key='cs.password'}}</label>
+              {{input type="password" class="form-control" value=password autocomplete="off"}}
+            </div>
+            {{button-default buttonKey="cs.loadWallet" action="loginWithKeyStore"}}
           </div>
           <div class="tab-pane fade" id="tab2default">
-            <form>
-              <div class="form-group">
-                <label class="control-label">{{get-resource key='cs.privateKey'}}</label>
-                {{input type="password" class="form-control" value=privateKey autocomplete="off"}}
-              </div>
+            <div class="form-group">
+              <label class="control-label">{{get-resource key='cs.privateKey'}}</label>
+              {{input type="password" class="form-control" value=privateKey autocomplete="off"}}
+            </div>
 
-              <button class="btn btn-sm btn-success" {{action "selectWallet" "privateKey"}}>{{get-resource
-                key='cs.loadWallet'}}</button>
-              <hr class="hide" />
-              <div class="row pointer hide">
-                <div class="col-sm-12">
-                  <u>
-                    <i {{action "privateKeyForTest"}} style="cursor:pointer">
-                      <a href="#">
-                        {{get-resource key='cs.privateKeyForTest'}}
-                      </a>
-                    </i>
-                  </u>
-                </div>
+            {{button-default buttonKey="cs.loadWallet" action="loginWithPrivateKey"}}
+
+            <hr class="hidee" />
+            <div class="row pointer hidee">
+              <div class="col-sm-12">
+                <u>
+                  <i {{action "privateKeyForTest"}} style="cursor:pointer">
+                    <a href="#">
+                      {{get-resource key='cs.privateKeyForTest'}}
+                    </a>
+                  </i>
+                </u>
               </div>
-            </form>
+            </div>
           </div>
+          
+          <div class="tab-pane fade" id="tabWalletAddress">
+            <div class="form-group">
+              <label class="control-label">{{get-resource key='cs.walletAddress'}}</label>
+              {{input type="text" class="form-control" value=walletAddress autocomplete="off"}}
+            </div>
+
+            {{button-default buttonKey="cs.loadWallet" action="loginWithWalletAddress"}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6">
+    <div class="panel panel-success">
+      <div class="panel-heading">
+        {{get-resource key='createNewWallet'}}
+      </div>
+      <div class="panel-body">
+        <div class="form-group">
+          <label class="control-label">{{get-resource key='cs.walletAddress'}}</label>
+          {{input type="text" class="form-control" value=selectedWallet.address disabled=true}}
         </div>
       </div>
     </div>
@@ -195,6 +234,7 @@
 
 <div class="row">
   <div class="col-sm-12">
-  <small class="pull-right"><i>This is an open source project. Hosted by <a href="https://github.com/zahirsolak/zehirwallet">github.com</a>.</i></small>
+    <span class="pull-right">This is an open source project. <a href="https://zahirsolak.github.com/zehirwallet">github.com</a>
+    </span>
   </div>
 </div>

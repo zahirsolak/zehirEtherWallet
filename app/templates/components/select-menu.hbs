@@ -1,0 +1,6 @@
+<button type="button" data-toggle="dropdown" class="btn btn-success dropdown-toggle">{{if selectedItem.text selectedItem.text title}} &nbsp;<span class="caret"></span></button>
+<ul class="dropdown-menu">
+  {{#each internalItems as |item|}}
+  <li class="{{if (eq value item.value) "active" ""}}"><a href="#" {{action "selectItem" item}}>{{item.text}}</a></li>
+  {{/each}}
+</ul>

@@ -7,6 +7,7 @@ export function initialize(application) {
   application.inject('route', 'config', 'config:main');
   application.inject('controller', 'config', 'config:main');
   application.inject('component', 'config', 'config:main');
+  application.inject('service', 'config', 'config:main');
 }
 
 export default {

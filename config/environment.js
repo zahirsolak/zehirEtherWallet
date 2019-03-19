@@ -35,6 +35,13 @@ module.exports = function (environment) {
     currentNetwork: null,
     currentNetworkKey: null,
     defaultNetworkKey: 'CLO_testnet',
+    defaultLanguageKey: 'en',
+    currentLanguageKey:'en',
+    language:{
+      tr:{text:"Türkçe",value:"tr"},
+      en:{text:"English",value:"en"}
+    },
+    
     network: {
       CLO: {
         key: "CLO",
@@ -53,7 +60,25 @@ module.exports = function (environment) {
         url: "https://clo-testnet3.0xinfra.com",
         chainId:20729,
         gasLimit: 150000
-      }
+      },
+      // ETC: {
+      //   key: "ETC",
+      //   name: "ETC",
+      //   description: "Ethereum Classic",
+      //   symbol: "ETC",
+      //   url: "https://etc-geth.0xinfra.com",
+      //   chainId:1,
+      //   gasLimit: 150000
+      // },
+      // ETH: {
+      //   key: "ETH",
+      //   name: "ETH",
+      //   description: "Ethereum",
+      //   symbol: "ETH",
+      //   url: "https://23.111.151.66:443/api",
+      //   chainId:1,
+      //   gasLimit: 150000
+      // }
       // ,CLO_local: {
       //   key: "CLO_local",
       //   name: "Local CLO",

@@ -1,21 +1,21 @@
 import Service from '@ember/service';
 
 export default Service.extend({
-  language: 'en',
   resources: {
     'tr': {
       'applicationName':'Zehir Wallet',
       'network':"Ağ",
+      'createNewWallet':'Yeni Cüzdan Oluştur',
       'cs': {
         'password':'Şifre',
         'selectFile':'Dosya Seç',
         'selectKeyStoreFile':'Keystore Dosyası Seç',
         'questionForWalletAccessType':'Cüzdanınıza nasıl erişmek istersiniz?',
-        'keyStoreFile':'Keystore Dosyası (UTC / JSON)',
+        'keyStoreFile':'Keystore Dosyası',
         'pageTitle': 'Cold Staking İşlemleri - Testnet',
         'privateKey': 'Özel Anahtar',
         'loadWallet': 'Cüzdanı Yükle',
-        'walletAdress': 'Cüzdan Adresi',
+        'walletAddress': 'Cüzdan Adresi',
         'balance': 'Bakiye',
         'amount': 'Miktar',
         'contractAddress': 'Sözleşme Adresi',
@@ -37,7 +37,7 @@ export default Service.extend({
         'privateKeyForTest':'Test için gerekli özel anahtarı girmek için buraya tıklayabilirsiniz.',
         'privateKeyForTesti_old':'Uygulamayı test etmek için aşağıda belirtilen özel anahtarı kullanabilirsiniz.',
         'transfer':'Transfer',
-        'targetWalletAdress': 'Hedef Cüzdan Adresi',
+        'targetWalletAddress': 'Hedef Cüzdan Adresi',
         'amountToSend':'Gönderilecek Miktar',
         'sendToWallet':'Cüzdana Gönder'
       },
@@ -49,16 +49,17 @@ export default Service.extend({
     'en': {
       'applicationName':'Zehir Wallet',
       'network':"Network",
+      'createNewWallet':'Create New Wallet',
       'cs': {
         'password':'Password',
         'selectFile':'Select File',
         'selectKeyStoreFile':'Select Keystore File',
         'questionForWalletAccessType':'How would you like to access your wallet?',
-        'keyStoreFile':'Keystore File (UTC / JSON)',
+        'keyStoreFile':'Keystore File',
         'pageTitle': 'Cold Staking Operations - Testnet',
         'privateKey': 'Private Key',
         'loadWallet': 'Load Wallet',
-        'walletAdress': 'Wallet Address',
+        'walletAddress': 'Wallet Address',
         'balance': 'Balance',
         'amount': 'Amount',
         'contractAddress': 'Contract Address',
@@ -81,7 +82,7 @@ export default Service.extend({
         'privateKeyForTest':'You can click here to enter required private key for testing.',    
         //'privateKeyForTest_old':'You can use the following private key to test the application.',
         'transfer':'Transfer',
-        'targetWalletAdress': 'Target Wallet Adress',
+        'targetWalletAddress': 'Target Wallet Address',
         'amountToSend':'Amount To Send',
         'sendToWallet':'Send To Wallet'
       },
@@ -92,7 +93,7 @@ export default Service.extend({
     }
   },
   getResource: function (key) {
-    var resourceKey = `resources.${this.get('language')}.${key}`;
+    var resourceKey = `resources.${this.get('config.currentLanguageKey')}.${key}`;
     var resourceValue = this.get(resourceKey);
     if (resourceValue) return resourceValue;
     return resourceKey;

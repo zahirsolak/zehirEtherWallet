@@ -1,20 +1,19 @@
 import Component from '@ember/component';
-import Ember from 'ember';
 import {
   observer
 } from '@ember/object';
 export default Component.extend({
   tagName:"",
-  resourceService: Ember.inject.service('resource'),
   key: null,
-  languageChanged: observer('resourceService.language', function () {
-    this.loadResource();
+  languageChanged: observer('config.currentLanguageKey', function () {
+    this.getResource();
   }),
   resourceValue: null,
-  loadResource() {
-    this.set("resourceValue", this.get('resourceService').getResource(this.get('key')));
+  getResource() {
+    let val =  this.get('resource').getResource(this.get('key'));
+    this.set("resourceValue", val);
   },
   didRender: function () {
-    this.loadResource();
-  }.on('didRender')
+    this.getResource();
+  }.on('didInsertElement')
 });

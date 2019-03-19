@@ -1,5 +1,6 @@
 import Controller from '@ember/controller';
 import Ember from 'ember';
+
 import {
   computed,
   observer
@@ -7,24 +8,19 @@ import {
 import ethers from 'ethers';
 import moment from 'moment';
 
-let toastr=window.toastr;
-let countdown=window.countdown;
+let toastr = window.toastr;
+let countdown = window.countdown;
 
 export default Controller.extend({
-  networks: computed(function () {
-    let array = [];
-    let source = this.get('config.network');
-    for (let element in source) {
-      array.push(source[element]);
-    }
-    return array;
-  }),
   provider: computed('config.currentNetwork', function () {
     return new ethers.providers.JsonRpcProvider(this.get('config.currentNetwork.url'));
   }),
+  readOnly:false,
   currentNetworkKeyChanged: observer('config.currentNetworkKey', function () {
     this.set('config.currentNetwork', this.get(`config.network.${this.get('config.currentNetworkKey')}`));
-    document.title = this.get('config.currentNetwork.description');
+  }),
+  currentLanguageKeyChanged: observer('config.currentNetworkKey', function () {
+    this.set('config.currentLanguage', this.get(`config.language.${this.get('config.currentLanguageKey')}`));
   }),
   selectedWallet: null,
   privateKey: '',
@@ -33,7 +29,7 @@ export default Controller.extend({
   contractAddress: computed(function () {
     return this.get('config.coldStaking.contractAddress');
   }),
-  targetWalletAdress: '',
+  targetWalletAddress: '',
   logs: [],
   withdrawIsDisabled: computed('currentRewards', function () {
     return parseFloat(this.get('currentRewards')) == 0;
@@ -42,10 +38,10 @@ export default Controller.extend({
     return !this.get('amount') || !this.get('balance') || parseFloat(this.get('balance')) < 0 || parseFloat(this.get('amount')) < 1 ||
       parseFloat(this.get('balance')) < parseFloat(this.get('amount'));
   }),
-  sendToWalletIsDisabled: computed('balance', 'amountToSend', 'targetWalletAdress', function () {
+  sendToWalletIsDisabled: computed('balance', 'amountToSend', 'targetWalletAddress', function () {
     return !this.get('amountToSend') || !this.get('balance') || parseFloat(this.get('balance')) < 0 || parseFloat(this.get('amountToSend')) < 1 ||
       parseFloat(this.get('balance')) < parseFloat(this.get('amountToSend')) ||
-      !this.get('targetWalletAdress');
+      !this.get('targetWalletAddress');
   }),
   allCoins: computed('currentRewards', 'stakeAmount', function () {
     let currentRewards = this.get('currentRewards'),
@@ -56,7 +52,7 @@ export default Controller.extend({
   currentRewardsFormatted: computed('currentRewards', 'stakeAmount', function () {
     return (this.get('currentRewards') ? parseFloat(this.get('currentRewards')) : 0).toFixed(2);
   }),
-  showInfo(type,message){
+  showInfo(type, message) {
     toastr.options = {
       "closeButton": false,
       "debug": false,
@@ -77,13 +73,13 @@ export default Controller.extend({
     toastr[type](message);
   },
   addInfo(message) {
-    this.showInfo("info",message);
+    this.showInfo("info", message);
   },
   addSuccess(message) {
-    this.showInfo("success",message);
+    this.showInfo("success", message);
   },
   addError(message) {
-    this.showInfo("error",message);
+    this.showInfo("error", message);
   },
 
   actions: {
@@ -134,14 +130,14 @@ export default Controller.extend({
     },
     sendToWallet() {
       if (this.get('sendToWalletIsDisabled')) return;
-      let targetWalletAdress = this.get('targetWalletAdress');
+      let targetWalletAddress = this.get('targetWalletAddress');
       let provider = this.get('provider');
       let wallet = this.get('selectedWallet');
       let amountTmp = this.get("amountToSend");
       let amount = ethers.utils.parseEther(amountTmp);
 
       let confirmMessage = this.get('resource').getResource('cs.sendToWalletConfirmMessage')
-        .replace('|amount|', amountTmp).replace('|walletAddress|', targetWalletAdress);
+        .replace('|amount|', amountTmp).replace('|walletAddress|', targetWalletAddress);
 
       if (!confirm(confirmMessage))
         return;
@@ -152,7 +148,7 @@ export default Controller.extend({
         .then(result => {
           let tx = {
             nonce: result.nonce,
-            to: targetWalletAdress,
+            to: targetWalletAddress,
             value: amount,
             chainId: overrides.chainId,
             gasPrice: overrides.gasPrice,
@@ -231,19 +227,25 @@ export default Controller.extend({
         this.addError(error);
       }
     },
+    loginWithKeyStore(){
+      this.send("selectWallet","keyStoreFile");
+    },
+    loginWithPrivateKey(){
+      this.send("selectWallet","privateKey");
+    },
+    loginWithWalletAddress(){
+      this.send("selectWallet","walletAddress");
+    },
     selectWallet(accessType) {
       let provider = this.get("provider");
+      let walletAddress = this.get("walletAddress");
 
       this.set('overrides', {
         "chainId": this.get('config.currentNetwork.chainId'),
         "gasLimit": this.get('config.currentNetwork.gasLimit'),
         "gasPrice": this.get('provider').getGasPrice()
       });
-
       try {
-
-
-
         new Ember.RSVP.hash({
           "wallet": new Ember.RSVP.Promise(walletResolve => {
             if (accessType == "keyStoreFile") {
@@ -259,12 +261,34 @@ export default Controller.extend({
                 walletResolve(new ethers.Wallet(privateKey, provider));
               }
             }
+            else if (accessType == "walletAddress")
+            {
+              walletResolve({
+                readOnly:true,
+                address:walletAddress,
+                provider:provider,
+                getBalance:function(){
+                  return provider.getBalance(this.address);
+                },
+                sign:function(){
+                  alert("This wallet is read only!");
+                },
+                getTransactionCount:function(){
+                  return provider.getTransactionCount(this.address);
+                },
+                privateKey:null
+              });
+            }
           })
         }).then(result => {
           let wallet = result.wallet;
           if (!wallet) return;
           this.set("selectedWallet", wallet);
-          let contract = new ethers.Contract(this.get('contractAddress'), this.get('config.coldStaking.contractAbi'), wallet);
+          let contract = null;
+          if(wallet.readOnly)
+            contract = new ethers.Contract(this.get('contractAddress'), this.get('config.coldStaking.contractAbi'), wallet.provider);
+          else 
+            contract = new ethers.Contract(this.get('contractAddress'), this.get('config.coldStaking.contractAbi'), wallet);
           contract.on('StartStaking', (addr, value, amount, time) => {
             if (addr == wallet.address) {
               this.addSuccess(`Started Staking. Params => addr:${addr}, value:${ethers.utils.formatEther(value)}, amount:${ethers.utils.formatEther(amount)}, time:${moment(new Date(parseInt(time.toString()) * 1000)).format()}`);
@@ -286,7 +310,7 @@ export default Controller.extend({
 
           this.set('contract', contract);
           this.send('loadInfo');
-        })
+        }).catch(error => this.addError(error));
 
       } catch (error) {
         this.addError(error);
@@ -298,12 +322,14 @@ export default Controller.extend({
       this.set('keyStoreJson', null);
       this.set('password', null);
     },
-    changeNetwork(key) {
+    onChangeNetwork(selectedItem) {
+      let key = selectedItem.value;
       this.set('config.currentNetworkKey', key);
       this.send('removeWalletInfo');
     },
-    changeLanguage(language) {
-      this.set("resource.language", language);
+    onChangeLanguage(selectedItem) {
+      let language = selectedItem.value;
+      this.set("config.currentLanguageKey", language);
       moment.locale(language);
       if (language == 'tr')
         countdown.setLabels(
