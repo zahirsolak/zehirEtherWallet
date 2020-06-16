@@ -9881,7 +9881,6 @@ define('@ember/test-helpers/setup-application-context', ['exports', '@ember/test
     @public
     @returns {string} the currently active route name
   */
-  /* globals EmberENV */
   function currentRouteName() {
     var _getContext = (0, _setupContext.getContext)(),
         owner = _getContext.owner;
@@ -10184,7 +10183,6 @@ define('@ember/test-helpers/setup-rendering-context', ['exports', '@ember/test-h
   exports.render = render;
   exports.clearRender = clearRender;
   exports.default = setupRenderingContext;
-  /* globals EmberENV */
   var RENDERING_CLEANUP = exports.RENDERING_CLEANUP = Object.create(null);
   var OUTLET_TEMPLATE = Ember.HTMLBars.template({
     "id": "gc40spmP",
@@ -12017,8 +12015,6 @@ define('ember-test-helpers/legacy-0-6-x/build-registry', ['exports', 'require'],
   } : function (obj) {
     return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
   };
-
-  /* globals global, self, requirejs */
 
   function exposeRegistryMethodsWithoutDeprecations(container) {
     var methods = ['register', 'unregister', 'resolve', 'normalize', 'typeInjection', 'injection', 'factoryInjection', 'factoryTypeInjection', 'has', 'options', 'optionsForType'];

@@ -1608,6 +1608,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("zehirwallet/app")["default"].create({"name":"zehirwallet","version":"0.0.0+728b3a9a"});
+  require("zehirwallet/app")["default"].create({"name":"zehirwallet","version":"0.0.0+baf567df"});
 }
 //# sourceMappingURL=zehirwallet.map
