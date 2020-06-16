@@ -1,115 +1,5 @@
 'use strict';
 
-define('zehirwallet/tests/app.lint-test', [], function () {
-  'use strict';
-
-  QUnit.module('ESLint | app');
-
-  QUnit.test('app.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'app.js should pass ESLint\n\n');
-  });
-
-  QUnit.test('components/button-confirm.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'components/button-confirm.js should pass ESLint\n\n');
-  });
-
-  QUnit.test('components/button-default.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'components/button-default.js should pass ESLint\n\n');
-  });
-
-  QUnit.test('components/cs-simulator.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'components/cs-simulator.js should pass ESLint\n\n');
-  });
-
-  QUnit.test('components/get-resource.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'components/get-resource.js should pass ESLint\n\n');
-  });
-
-  QUnit.test('components/input-file.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'components/input-file.js should pass ESLint\n\n');
-  });
-
-  QUnit.test('components/nav-bar.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'components/nav-bar.js should pass ESLint\n\n');
-  });
-
-  QUnit.test('components/select-menu.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'components/select-menu.js should pass ESLint\n\n');
-  });
-
-  QUnit.test('controllers/application.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'controllers/application.js should pass ESLint\n\n');
-  });
-
-  QUnit.test('controllers/index.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'controllers/index.js should pass ESLint\n\n');
-  });
-
-  QUnit.test('helpers/eq.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'helpers/eq.js should pass ESLint\n\n');
-  });
-
-  QUnit.test('initializers/config.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'initializers/config.js should pass ESLint\n\n');
-  });
-
-  QUnit.test('initializers/resource.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'initializers/resource.js should pass ESLint\n\n');
-  });
-
-  QUnit.test('resolver.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'resolver.js should pass ESLint\n\n');
-  });
-
-  QUnit.test('router.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'router.js should pass ESLint\n\n');
-  });
-
-  QUnit.test('routes/application.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'routes/application.js should pass ESLint\n\n');
-  });
-
-  QUnit.test('routes/index.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'routes/index.js should pass ESLint\n\n');
-  });
-
-  QUnit.test('routes/simulator.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'routes/simulator.js should pass ESLint\n\n');
-  });
-
-  QUnit.test('services/modal.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'services/modal.js should pass ESLint\n\n');
-  });
-
-  QUnit.test('services/resource.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'services/resource.js should pass ESLint\n\n');
-  });
-
-  QUnit.test('services/simulator.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'services/simulator.js should pass ESLint\n\n');
-  });
-});
 define('zehirwallet/tests/helpers/destroy-app', ['exports'], function (exports) {
   'use strict';
 
@@ -409,13 +299,117 @@ define('zehirwallet/tests/integration/helpers/eq-test', ['ember-qunit'], functio
     assert.equal(this.$().text().trim(), '1234');
   });
 });
-define('zehirwallet/tests/test-helper', ['zehirwallet/tests/helpers/resolver', 'ember-qunit', 'ember-cli-qunit'], function (_resolver, _emberQunit, _emberCliQunit) {
+define('zehirwallet/tests/lint/app.lint-test', [], function () {
   'use strict';
 
-  (0, _emberQunit.setResolver)(_resolver.default);
-  (0, _emberCliQunit.start)();
+  QUnit.module('ESLint | app');
+
+  QUnit.test('app.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'app.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('components/button-confirm.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'components/button-confirm.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('components/button-default.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'components/button-default.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('components/cs-simulator.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'components/cs-simulator.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('components/get-resource.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'components/get-resource.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('components/input-file.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'components/input-file.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('components/nav-bar.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'components/nav-bar.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('components/select-menu.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'components/select-menu.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('controllers/application.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'controllers/application.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('controllers/index.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'controllers/index.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('helpers/eq.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'helpers/eq.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('initializers/config.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'initializers/config.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('initializers/resource.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'initializers/resource.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('resolver.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'resolver.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('router.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'router.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('routes/application.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'routes/application.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('routes/index.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'routes/index.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('routes/simulator.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'routes/simulator.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('services/modal.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'services/modal.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('services/resource.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'services/resource.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('services/simulator.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'services/simulator.js should pass ESLint\n\n');
+  });
 });
-define('zehirwallet/tests/tests.lint-test', [], function () {
+define('zehirwallet/tests/lint/tests.lint-test', [], function () {
   'use strict';
 
   QUnit.module('ESLint | tests');
@@ -534,6 +528,12 @@ define('zehirwallet/tests/tests.lint-test', [], function () {
     assert.expect(1);
     assert.ok(true, 'unit/services/simulator-test.js should pass ESLint\n\n');
   });
+});
+define('zehirwallet/tests/test-helper', ['zehirwallet/tests/helpers/resolver', 'ember-qunit', 'ember-cli-qunit'], function (_resolver, _emberQunit, _emberCliQunit) {
+  'use strict';
+
+  (0, _emberQunit.setResolver)(_resolver.default);
+  (0, _emberCliQunit.start)();
 });
 define('zehirwallet/tests/unit/controllers/application-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
@@ -694,6 +694,25 @@ define('zehirwallet/tests/unit/services/simulator-test', ['ember-qunit'], functi
     assert.ok(service);
   });
 });
+define('zehirwallet/config/environment', [], function() {
+  var prefix = 'zehirwallet';
+try {
+  var metaName = prefix + '/config/environment';
+  var rawConfig = document.querySelector('meta[name="' + metaName + '"]').getAttribute('content');
+  var config = JSON.parse(decodeURIComponent(rawConfig));
+
+  var exports = { 'default': config };
+
+  Object.defineProperty(exports, '__esModule', { value: true });
+
+  return exports;
+}
+catch(err) {
+  throw new Error('Could not read config from meta tag with name "' + metaName + '".');
+}
+
+});
+
 require('zehirwallet/tests/test-helper');
 EmberENV.TESTS_FILE_LOADED = true;
 //# sourceMappingURL=tests.map
