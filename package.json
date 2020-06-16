@@ -48,6 +48,7 @@
   },
   "dependencies": {
     "bootstrap-sass": "^3.4.1",
+    "clean-css": "^4.2.3",
     "ethers": "^4.0.7",
     "gh-pages": "^2.0.1"
   }
